@@ -1,0 +1,10 @@
+export 'splash.dart';
+export 'register.dart';
+export 'signin.dart';
+export 'welcome.dart';
+export 'verification.dart';
+export 'dashboard.dart';
+export 'error.dart';
+export 'notification.dart';
+export 'support.dart';
+export 'otp.dart';
