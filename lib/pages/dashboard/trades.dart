@@ -46,7 +46,7 @@ class _DashboardTradesPageState extends State<DashboardTradesPage> {
       setState(() {
         tradeSelector['page'] = tradeData['nextPage'];
       });
-      _loadMoreTrades();
+      _loadTrades();
     }
   }
 

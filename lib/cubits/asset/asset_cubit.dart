@@ -19,8 +19,8 @@ class AssetCubit extends Cubit<AssetState> {
       var giftcards = await assetRepository.getGiftcards(page: page, query: query ?? '');
       if(giftcards.status == 200){
         var data = giftcards.data;
-        var records = data['records'].map((card) => Giftcard.fromJson(card)).toList();
-        data['records'] = records;
+        var records = data['docs'].map((card) => Giftcard.fromJson(card)).toList();
+        data['docs'] = records;
         emit(AssetLoaded(data: data));
       }
       emit(AssetInitial());
@@ -63,8 +63,8 @@ class AssetCubit extends Cubit<AssetState> {
       var spendingCards = await assetRepository.getSpendingCards(query: query?? '', page: page);
       if (spendingCards.status == 200) {
         var data = spendingCards.data;
-        var records = data['records'].map((crypto) => Spending.fromJson(crypto));
-        data['records'] = records;
+        var records = data['docs'].map((crypto) => Spending.fromJson(crypto));
+        data['docs'] = records;
         emit(AssetLoaded(data: data));
       }
       emit(AssetInitial());
