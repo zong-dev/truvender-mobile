@@ -13,27 +13,34 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   List<Notify> notifications = [];
+  bool loading = false;
+
+  Widget buildView(){
+    if(!loading && notifications.isNotEmpty){
+      return ListView.builder(
+        physics: const ClampingScrollPhysics(),
+        itemCount: notifications.length,
+        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.only(bottom: 8),
+        itemBuilder: (context, index) {
+            var notification = notifications[index];
+            return NotificationTile(
+              notification: notification,
+            );
+        },
+      );
+    }else if(loading){
+       return const LoadingWidget();
+    }else {
+      return const Expanded(child: EmptyData(text: "No records found"));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Wrapper(
       title: 'Notifications',
-      child: ListView.builder(
-        physics: const ClampingScrollPhysics(),
-        itemCount: notifications.isNotEmpty ? notifications.length : 8,
-        scrollDirection: Axis.vertical,
-        padding: const EdgeInsets.only(bottom: 8),
-        itemBuilder: (context, index) {
-          if (notifications.isNotEmpty) {
-            var notification = notifications[index];
-            return NotificationTile(
-              notification: notification,
-            );
-          } else {
-            return beforeLoad2();
-          }
-        },
-      ),
+      child: buildView(),
     );
   }
 }
