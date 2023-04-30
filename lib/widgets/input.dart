@@ -42,6 +42,7 @@ class TextInput extends StatelessWidget {
       onChanged: (_){
         if (onChange != null) {onChange!();}
       },
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         contentPadding: padding,
         floatingLabelBehavior: FloatingLabelBehavior.auto,

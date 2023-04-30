@@ -40,8 +40,10 @@ class AppRouter {
           (blocstate.user.email_verified_at == null ||
               blocstate.user.phone_verified_at == null)) {
         return '/verification';
-      } else {
-        // print("State is $blocstate");
+      } else if(blocstate is OtpChallenge && location != '/otp-challenge') {
+        return '/otp-challenge';
+      }else {
+        
       }
     },
     routes: <GoRoute>[
@@ -120,7 +122,7 @@ class AppRouter {
             var authenticatedUser =
                 BlocProvider.of<AppBloc>(context).authenticatedUser;
             String verifyType = "email";
-            if (authenticatedUser!.phone_verified_at == null &&
+            if (authenticatedUser.phone_verified_at == null &&
                 authenticatedUser.email_verified_at != null) {
               verifyType = "phone";
             }

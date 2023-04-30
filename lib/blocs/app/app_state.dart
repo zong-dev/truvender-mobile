@@ -35,3 +35,5 @@ class TransactionInitiated extends AppState {
 }
 
 class Loading extends AppState {}
+
+class OtpChallenge extends AppState {}

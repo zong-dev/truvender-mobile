@@ -194,7 +194,7 @@ class AuthRepository {
     }
   }
 
-  sendOTP(String token) async {
+  sendOTP() async {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(

@@ -49,7 +49,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if(userRequest.statusCode == 200){
       User user = User.fromJson(userRequest.data['user']);
       authenticatedUser = user;
-      emit(Authenticated(user: user));
+      if(user.requireOtp == true){
+        emit(OtpChallenge());
+      }else {
+        emit(Authenticated(user: user));
+      }
     }
   }
 
