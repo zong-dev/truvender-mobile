@@ -80,10 +80,7 @@ class _BankSettingPageState extends State<BankSettingPage> {
   void initState() {
     super.initState();
     appBloc = BlocProvider.of<ProfileCubit>(context).appBloc;
-    if(BlocProvider.of<ProfileCubit>(context).bankList.isEmpty){
-      profileBloc = BlocProvider.of<ProfileCubit>(context);
-      profileBloc.banks();
-    }
+      BlocProvider.of<ProfileCubit>(context).banks();
   }
 
   String bankPickerTitle = "Loading banks ....";

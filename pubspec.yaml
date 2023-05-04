@@ -71,6 +71,9 @@ dependencies:
   fluttertoast: ^8.2.1
   dio: ^5.1.1
   ade_flutterwave_working_version: ^0.0.2+2
+  simple_circular_progress_bar: ^1.0.2
+  quickalert: ^1.0.1
+  flutter_animate: ^4.1.1+1
 
 dev_dependencies:
   flutter_test:

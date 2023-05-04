@@ -24,6 +24,14 @@ class ProcessFailed extends TradeState {
   const ProcessFailed({ required this.message });
 }
 
+class WalletLoaded extends TradeState {
+  final Wallet wallet;
+  const WalletLoaded({required this.wallet});
+  
+  @override
+  List<Object> get props => [wallet];
+}
+
 class TradeSuccess extends TradeState {
   final String type;
   final Trade trade;

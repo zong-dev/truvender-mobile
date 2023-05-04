@@ -11,6 +11,7 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final AuthRepository authRepository;
   final LocalNotification localNotificationService;
+  final StorageUtil storage = StorageUtil();
 
   final Dio dio;
   User authenticatedUser = User(id:'');
@@ -70,7 +71,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (userRequest.statusCode == 200) {
       User user = User.fromJson(userRequest.data['user']);
       authenticatedUser = user;
-      emit(Authenticated(user: user));
+      await storage.setStrVal("variations", '');
+      emit(Authenticated(user: user, refreshed:  true));
     }
   }
 }

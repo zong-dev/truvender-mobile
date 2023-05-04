@@ -61,7 +61,7 @@ List tradables = [
     "route": "crypto",
   },
   {
-    "name": "Temporary aumber",
+    "name": "Temporary number",
     "description": "Buy real virtual number",
     "icon": CupertinoIcons.phone_down_fill,
     "route": "virtualNumber",

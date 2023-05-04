@@ -185,8 +185,7 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                       String route = item['route'].toString();
                       if (route.isNotEmpty) {
                         if (route != 'virtualNumber') {
-                          context.pushNamed("assets",
-                              queryParams: {"type": route});
+                          context.pushNamed("assets", queryParams: {"type": route});
                         } else {
                           context.pushNamed("virtualNumber");
                         }

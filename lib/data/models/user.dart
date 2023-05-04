@@ -14,6 +14,7 @@ class User extends Equatable {
   bool? has_verify_otp;
   bool requireOtp;
   String? currency;
+  String country;
 
   int notifyType;
 
@@ -31,6 +32,7 @@ class User extends Equatable {
     this.username,
     this.phone,
     this.avatar,
+    this.country = 'NG',
     this.role,
     this.notifyType = 2,
     this.email_verified_at,
@@ -65,6 +67,7 @@ class User extends Equatable {
         txLimit,
         requireOtp,
         hasPin,
+        country,
         notifyType,
         withdrawAccount,
         banking,
@@ -91,6 +94,7 @@ class User extends Equatable {
       notifyType: json['notifyType'],
       withdrawAccount: json['withdrawAccount'],
       banking: json['banking'],
+      country: json['country'],
     );
   }
 
@@ -112,6 +116,7 @@ class User extends Equatable {
     data['currency'] = currency;
     data['requireOtp'] = requireOtp;
     data['hasPin'] = hasPin;
+    data['country'] = country;
     data['notifyType'] = notifyType;
     data['withdrawAccount'] = withdrawAccount;
     data['banking'] = banking;
@@ -134,6 +139,7 @@ class User extends Equatable {
     bool? hasPin,
     String? lastLogin,
     int? notifyType,
+    String? country,
     Map<String, dynamic>? withdrawAccount,
   }) {
     return User(
@@ -147,6 +153,7 @@ class User extends Equatable {
       phone_verified_at: phone_verified_at ?? this.phone_verified_at,
       has_verify_otp: has_verify_otp ?? this.has_verify_otp,
       txLimit: txLimit ?? this.txLimit,
+      country: country ?? this.country,
       kycStatus: kycStatus ?? this.kycStatus,
       verified: verified ?? this.verified,
       lastLogin: lastLogin ?? this.lastLogin,

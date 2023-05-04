@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/cubits/asset/asset_cubit.dart';
 import 'package:truvender/cubits/bills/bills_cubit.dart';
+import 'package:truvender/cubits/kyc/kyc_cubit.dart';
 import 'package:truvender/cubits/profile/profile_cubit.dart';
+import 'package:truvender/cubits/trade/trade_cubit.dart';
 import 'package:truvender/cubits/wallet/wallet_cubit.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/pages/pages.dart';
@@ -19,7 +21,7 @@ class AppRouter {
   AppRouter(this.appBloc);
 
   late final GoRouter router = GoRouter(
-    errorBuilder: (context, state) => const ErrorScreen(),
+    // errorBuilder: (context, state) => const ErrorScreen(),
     refreshListenable: GoRouterRefreshStream(appBloc.stream),
     redirect: (BuildContext context, GoRouterState state) async {
       final blocstate = context.read<AppBloc>().state;
@@ -40,11 +42,18 @@ class AppRouter {
           (blocstate.user.email_verified_at == null ||
               blocstate.user.phone_verified_at == null)) {
         return '/verification';
-      } else if(blocstate is OtpChallenge && location != '/otp-challenge') {
+      } else if (blocstate is OtpChallenge && location != '/otp-challenge') {
         return '/otp-challenge';
-      }else {
-        
-      }
+      // } else if (blocstate is Authenticated && (appBloc.authenticatedUser.kycStatus == null ||
+      //     appBloc.authenticatedUser.kycStatus == 'Tier1')) {
+      //   User user = appBloc.authenticatedUser;
+      //   if (user.kycStatus == null && user.country.toUpperCase() == "NG") {
+      //     return "/kyc";
+      //   } else if (user.kycStatus == 'Tier1' &&
+      //       user.country.toUpperCase() != 'NG') {
+      //     return '/kyc/id';
+      //   }
+      } else {}
     },
     routes: <GoRoute>[
       GoRoute(
@@ -139,13 +148,24 @@ class AppRouter {
        */
       GoRoute(
         path: '/kyc',
-        builder: (BuildContext context, GoRouterState state) =>
-            const BvnKycPage(),
+        builder: (BuildContext context, GoRouterState state) {
+          return BlocProvider<KycCubit>(
+            create: (context) =>
+                KycCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+            child: const BvnKycPage(),
+          );
+        },
         routes: [
           GoRoute(
             path: 'id',
-            builder: (BuildContext context, GoRouterState state) =>
-                const IdKycPage(),
+            builder: (BuildContext context, GoRouterState state) {
+              String? comment = state.queryParams['for']; 
+              return BlocProvider<KycCubit>(
+                create: (context) =>
+                    KycCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+                child: IdKycPage(comment: comment),
+              );
+            },
           ),
         ],
       ),
@@ -159,7 +179,7 @@ class AppRouter {
         path: '/virtualNumber',
         name: 'virtualNumber',
         builder: (BuildContext context, GoRouterState state) =>
-            const IdKycPage(),
+            const CryptoTradePage(),
       ),
 
       /**
@@ -167,26 +187,27 @@ class AppRouter {
        * ========================== Bill Payment =======================
        */
       GoRoute(
-        path: '/bill',
-        name: 'bill',
-        builder: (BuildContext context, GoRouterState state) {
-          buildView(){
-            if(state.queryParams['view'] == 'mobile-refill'){
-              return MobileRefillPage(
-                refillType: state.queryParams['type'],
-              );
-            }else {
-              return BillPaymentPage(
-                billType: state.queryParams['type'],
-              );
+          path: '/bill',
+          name: 'bill',
+          builder: (BuildContext context, GoRouterState state) {
+            buildView() {
+              if (state.queryParams['view'] == 'mobile-refill') {
+                return MobileRefillPage(
+                  refillType: state.queryParams['type'],
+                );
+              } else {
+                return BillPaymentPage(
+                  billType: state.queryParams['type'],
+                );
+              }
             }
-          }
-          return BlocProvider<BillsCubit>(
-            create: (context) => BillsCubit(appBloc: BlocProvider.of<AppBloc>(context)),
-            child: buildView(),
-          );
-        }
-      ),
+
+            return BlocProvider<BillsCubit>(
+              create: (context) =>
+                  BillsCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+              child: buildView(),
+            );
+          }),
 
       /**
        * 
@@ -242,6 +263,35 @@ class AppRouter {
         },
       ),
 
+      GoRoute(
+        path: '/asset',
+        name: 'asset',
+        builder: (BuildContext context, GoRouterState state) {
+          String? type = state.queryParams['type'];
+
+          buildChildView() {
+            if (type != null && type == 'giftcard') {
+              Giftcard? card = state.extra as Giftcard;
+              return TradeGiftcardPage(card: card,);
+            } else if (type != null && type == 'crypto') {
+              Crypto? crypto = state.extra as Crypto;
+              return CryptoTradePage(asset: crypto);
+            } else if (type != null && type == 'spending-card') {
+              Spending? card = state.extra as Spending;
+              return SpendingCardTradePage(card: card,);
+            } else {
+              Fundz? asset = state.extra as Fundz;
+              return FundTradePage(asset: asset);
+            }
+          }
+          AppBloc appBloc = BlocProvider.of<AppBloc>(context);
+          return MultiBlocProvider(providers: [
+            BlocProvider<TradeCubit>(create: (context) => TradeCubit(appBloc: appBloc)),
+            BlocProvider<AssetCubit>(create: (context) => AssetCubit(appBloc: appBloc)),
+          ], child: buildChildView());
+        },
+      ),
+
       /**
        * 
        * ========================== Wallet =======================
@@ -286,10 +336,10 @@ class AppRouter {
                 return const PinSettingPage();
               } else if (pane == 'notification') {
                 return const NotificationSettingPage();
-              }else if(pane == 'banking'){
+              } else if (pane == 'banking') {
                 return const BankSettingPage();
               }
-          }
+            }
 
             return BlocProvider<ProfileCubit>(
                 create: (context) =>

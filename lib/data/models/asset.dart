@@ -8,6 +8,7 @@ class Giftcard extends Equatable {
   List? types;
   List? defaultRates;
   String? acceptedCode;
+  List? tradeLimits;
 
   Giftcard({
     required this.id,
@@ -16,6 +17,7 @@ class Giftcard extends Equatable {
     required this.isAvailable,
     required this.types,
     required this.defaultRates,
+    required this.tradeLimits,
     required this.acceptedCode,
   });
 
@@ -27,16 +29,18 @@ class Giftcard extends Equatable {
         types,
         defaultRates,
         acceptedCode,
+        tradeLimits,
       ];
 
   factory Giftcard.fromJson(Map<String, dynamic> json) {
     return Giftcard(
       id: json['_id'],
       name: json['name'],
+      tradeLimits: json['tradeLimits'] ?? [],
       image: json['image'],
       isAvailable: json['isAvailable'],
-      types: json['types'],
-      defaultRates: json['defaultRates'],
+      types: json['types'] ?? [],
+      defaultRates: json['defaultRates'] ?? [],
       acceptedCode: json['acceptedCode'],
     );
   }
@@ -50,6 +54,7 @@ class Giftcard extends Equatable {
     data['types'] = types;
     data['defaultRates'] = defaultRates;
     data['acceptedCode'] = acceptedCode;
+    data['tradeLimits'] = tradeLimits;
 
     return data;
   }

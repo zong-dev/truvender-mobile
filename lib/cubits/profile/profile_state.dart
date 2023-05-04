@@ -11,6 +11,8 @@ class ProfileInitial extends ProfileState {}
 
 class ProcessingRequest extends ProfileState {}
 
+class UploadingAvatar extends ProfileState {}
+
 class RequestSuccess extends ProfileState {
   final dynamic responseData;
   final bool isSubProccess;

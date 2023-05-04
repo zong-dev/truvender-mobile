@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:truvender/data/models/models.dart';
 
 class SpendingCardTradePage extends StatefulWidget {
-  const SpendingCardTradePage({ Key? key }) : super(key: key);
+  final Spending? card;
+  const SpendingCardTradePage({ Key? key, this.card }) : super(key: key);
 
   @override
   _SpendingCardTradePageState createState() => _SpendingCardTradePageState();

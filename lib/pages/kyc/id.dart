@@ -1,14 +1,20 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:truvender/blocs/app/app_bloc.dart';
+import 'package:truvender/cubits/kyc/kyc_cubit.dart';
+import 'package:truvender/data/models/models.dart';
 import 'package:truvender/theme.dart';
-import 'package:truvender/utils/notifier.dart';
-import 'package:truvender/utils/spacing.dart';
+import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class IdKycPage extends StatefulWidget {
-  const IdKycPage({Key? key}) : super(key: key);
+  final String? comment;
+  const IdKycPage({Key? key, this.comment}) : super(key: key);
 
   @override
   _IdKycPageState createState() => _IdKycPageState();
@@ -17,41 +23,88 @@ class IdKycPage extends StatefulWidget {
 class _IdKycPageState extends State<IdKycPage> {
   bool uploadFile = false;
   final _verificationForm = GlobalKey<FormState>();
+  late Map kycRequestData;
+  bool processing = false;
+
+  _submitHandler() {
+    BlocProvider.of<KycCubit>(context).submitKycDocumnet(
+        name: kycRequestData['name'],
+        type: kycRequestData['type'],
+        dateOfBirth: kycRequestData['dateOfBirth'],
+        documentCode: kycRequestData['documentCode'],
+        document: kycRequestData['document']);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return KycWrapper(
-        showExitButton: false,
-        child: Form(
-          key: _verificationForm,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (uploadFile)
-                const SecondStep()
-              else
-                FirstStep(onSubmit: () {
-                  if (_verificationForm.currentState!.validate()) {
+    return BlocListener<KycCubit, KycState>(
+      listener: (context, state) {
+        if (state is CreatingRequest) {
+          setState(() => processing = true);
+        } else if (state is RequestFailed) {
+          setState(() => processing = false);
+          notify(context, "Something went wrong, try again latter", "error");
+        } else if (state is TierTwoVerification) {
+          setState(() => processing = false);
+           QuickAlert.show(
+            context: context,
+            confirmBtnText: 'Continue',
+            type: QuickAlertType.success,
+            title: 'Request submitted!',
+            text: "Your verification request was submitted and under review",
+            onConfirmBtnTap: () {
+              context.push('/');
+            }
+          );
+        }
+      },
+      child: KycWrapper(
+          showExitButton: false,
+          child: Form(
+            key: _verificationForm,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (uploadFile)
+                  SecondStep(
+                      submitHandler: (File document, String documentCode) {
                     setState(() {
-                      uploadFile = true;
+                      kycRequestData['document'] = document;
+                      kycRequestData['documentCode'] = documentCode;
                     });
-                  }
-                })
-            ],
-          ),
-        ));
+                    _submitHandler();
+                  })
+                else
+                  FirstStep(
+                    onSubmit: (data) {
+                      if (_verificationForm.currentState!.validate()) {
+                        setState(() {
+                          uploadFile = true;
+                          kycRequestData = data;
+                        });
+                      }
+                    },
+                    source: widget.comment,
+                  )
+              ],
+            ),
+          )),
+    );
   }
 }
 
 class FirstStep extends StatefulWidget {
-  const FirstStep({Key? key, required this.onSubmit}) : super(key: key);
+  const FirstStep({Key? key, required this.onSubmit, this.source})
+      : super(key: key);
   final Function onSubmit;
+  final String? source;
 
   @override
   _FirstStepState createState() => _FirstStepState();
 }
 
 class _FirstStepState extends State<FirstStep> {
+  late User user;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateOfBirth = TextEditingController();
 
@@ -66,6 +119,7 @@ class _FirstStepState extends State<FirstStep> {
     super.initState();
     setState(() {
       selectedType = verificationTypes[0];
+      user = BlocProvider.of<AppBloc>(context).authenticatedUser;
     });
   }
 
@@ -143,9 +197,9 @@ class _FirstStepState extends State<FirstStep> {
           bordered: true,
           rules: MultiValidator(
             [
-              RequiredValidator(errorText: "Token is required"),
+              RequiredValidator(errorText: "Full name is required"),
               MinLengthValidator(6,
-                  errorText: "Token must be at least 6 characters"),
+                  errorText: "Full name must be at least 6 characters"),
             ],
           ),
         ),
@@ -157,7 +211,11 @@ class _FirstStepState extends State<FirstStep> {
           background: Theme.of(context).colorScheme.primary,
           title: 'Next',
           foreground: Colors.white,
-          onPressed: () => widget.onSubmit(),
+          onPressed: () => widget.onSubmit({
+            "name": _nameController.text,
+            "type": selectedType,
+            "dateOfBirth": _dateOfBirth.text,
+          }),
         ),
         verticalSpacing(24),
         const Divider(
@@ -165,53 +223,74 @@ class _FirstStepState extends State<FirstStep> {
           thickness: 2,
         ),
         verticalSpacing(24),
-        GestureDetector(
-          onTap: () {},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Skip for now',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).accentColor,
-                    fontWeight: FontWeight.w800),
-              ),
-            ],
-          ),
-        )
+        user.country.toUpperCase() == 'NG'
+            ? GestureDetector(
+                onTap: () => context.push('/'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.source == null ? 'Skip for now' : "Cancel",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
 }
 
 class SecondStep extends StatefulWidget {
-  const SecondStep({Key? key}) : super(key: key);
+  final Function submitHandler;
+  const SecondStep({Key? key, required this.submitHandler}) : super(key: key);
 
   @override
   _SecondStepState createState() => _SecondStepState();
 }
 
 class _SecondStepState extends State<SecondStep> {
+  final TextEditingController _documentController = TextEditingController();
   late File document;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FileUpload(label: "Upload an image of your document", isMultiple: false, onSelected: (file) {
-          setState(() {
-            document = file;
-          });
-          // documents = ;
-        }),
+        TextInput(
+          label: 'Document Code',
+          obsecureText: false,
+          controller: _documentController,
+          bordered: true,
+          rules: MultiValidator(
+            [
+              RequiredValidator(errorText: "Document code is required"),
+              MinLengthValidator(6,
+                  errorText: "Document code must be at least 6 characters"),
+            ],
+          ),
+        ),
+        verticalSpacing(20),
+        FileUpload(
+            label: "Upload an image of your document",
+            isMultiple: false,
+            onSelected: (File file) {
+              setState(() {
+                document = file;
+              });
+              // documents = ;
+            }),
         verticalSpacing(30),
         Button.primary(
           background: Theme.of(context).colorScheme.primary,
           title: 'Submit',
           foreground: Colors.white,
           onPressed: () {
-              notify(context, "Verification request seccessful", 'success');
+            widget.submitHandler(document, _documentController.text);
           },
         ),
       ],

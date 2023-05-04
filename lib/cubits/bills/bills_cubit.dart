@@ -1,10 +1,13 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/data/models/wallet.dart';
 import 'package:truvender/data/repositories/repositories.dart';
+import 'package:truvender/services/services.dart';
 
 part 'bills_state.dart';
 
@@ -14,18 +17,19 @@ class BillsCubit extends Cubit<BillsState> {
 
   late BillRepository billRepository = BillRepository(dioInstance: appBloc.dio);
   late Wallet wallet;
-  List<dynamic> variations = [];
+  final StorageUtil storage = StorageUtil();
   
 
   Future<void> loadVariations() async{
     emit(RequestLoading());
     try {
-      if(variations.isEmpty){
+      String variations = await storage.getStrVal("variations");
+      if(variations.isEmpty || variations == null){
         var request = await billRepository.getVariations();
-        variations = request.data;
+        await storage.setStrVal("variations", jsonEncode(request.data));
         emit(VariationLoaded(variations: request.data, ));
       }else{
-        emit(VariationLoaded(variations: variations ));
+        emit(VariationLoaded(variations: jsonDecode(variations) ));
       }
     } catch (e) {
       emit(BillRequestFailed(message: e.toString()));

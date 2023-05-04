@@ -1,11 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:truvender/data/models/notify.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/theme.dart';
-import 'package:truvender/utils/methods.dart';
-import 'package:truvender/utils/spacing.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 

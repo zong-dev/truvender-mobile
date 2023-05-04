@@ -160,10 +160,11 @@ class AccountRepository {
   }) async {
     try {
       var options = await _getRequestOptions();
-       Response response =
+      Response response =
           await dioInstance.post("$endpoint/profile/update-avatar", data: {
-        "imgUrl": imgUrl,
-      }, options: options);
+          "imgUrl": imgUrl,
+        }, options: options
+      );
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {

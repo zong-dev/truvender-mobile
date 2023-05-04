@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:truvender/data/models/notify.dart';
-import 'package:truvender/theme.dart';
-import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -32,7 +30,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }else if(loading){
        return const LoadingWidget();
     }else {
-      return const Expanded(child: EmptyData(text: "No records found"));
+      return const EmptyData(text: "No notifications yet");
     }
   }
 
@@ -40,7 +38,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Wrapper(
       title: 'Notifications',
-      child: buildView(),
+      child: SizedBox(
+        child: Expanded(
+          child: buildView(),
+        ),
+      )
     );
   }
 }

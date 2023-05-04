@@ -19,15 +19,15 @@ class TradeRepository {
     required int denomination,
     required int price,
     required bool isDefault,
-    required String reciept,
-    required List<Map> images,
+    // required String reciept,
+    required List images,
   }) async {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post("$endpoint/trades/create/giftcard", data: {
             "asset" : asset, "amount": amount, "type": type, "rate": rate,
             "denomination": denomination,  "price": price, "isDefault": isDefault,
-            "reciept": reciept, "images": images,
+            "images": images,
           }, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -50,6 +50,20 @@ class TradeRepository {
           data: {
             "asset" : asset, "amount": amount, "type": type, "value": value
           }, options: options);
+      return response;
+    } catch (err, stacktrace) {
+      if (kDebugMode) {
+        print("Exception occured: $err stackTrace: $stacktrace");
+      }
+      throw Exception(err);
+    }
+  }
+  
+  Future getWallet(String? id) async {
+    try {
+      var options = await _getRequestOptions();
+      Response response = await dioInstance
+          .get("$endpoint/wallet/all/?type=${id != null ? '' : 'local'}&asset=${id??''}", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {

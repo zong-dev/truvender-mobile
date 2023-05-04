@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/data/repositories/repositories.dart';
+import 'package:truvender/services/services.dart';
 import 'package:truvender/utils/utils.dart';
 
 part 'profile_state.dart';
@@ -13,8 +17,8 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   late AccountRepository accountRepository =
       AccountRepository(dioInstance: appBloc.dio);
-  List bankList = [];
-
+  final StorageUtil storage = StorageUtil();
+  
   Future<void> dashboard() async {
     emit(ProcessingRequest());
     try {
@@ -28,9 +32,14 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> banks() async {
     emit(ProcessingRequest());
     try {
-      var request = await accountRepository.getBanks();
-      bankList = request.data;
-      emit(RequestSuccess(responseData: request.data));
+      String bankList = await storage.getStrVal("banks");
+      if(bankList.isEmpty){
+        var request = await accountRepository.getBanks();
+        await storage.setStrVal("banks", jsonEncode(request.data));
+        emit(RequestSuccess(responseData: request.data));
+      }else {
+        emit(RequestSuccess(responseData: jsonDecode(bankList)));
+      }
     } catch (e) {
       emit(RequestFailed(message: e.toString()));
     }
@@ -200,16 +209,13 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> changeAvatar({required dynamic image}) async {
+  Future<void> changeAvatar({required File image}) async {
     emit(ProcessingRequest());
     try {
-      var uploadRequest =
-          await uploadFile(dioInstance: appBloc.dio, file: image);
-      var request = await accountRepository.changeAvatar(imgUrl: uploadRequest);
-      if (request.statusCode == 200) {
-        appBloc.add(UserChanged());
-        emit(RequestSuccess(responseData: request.data));
-      }
+      emit(UploadingAvatar());
+      var uploadRequest = await uploadFile(dioInstance: appBloc.dio, file: image);
+      var request = await accountRepository.changeAvatar(imgUrl: uploadRequest['url']);
+      emit(RequestSuccess(responseData: request.data));
     } catch (e) {
       emit(RequestFailed(message: e.toString()));
     }

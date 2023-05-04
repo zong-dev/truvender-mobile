@@ -82,7 +82,11 @@ class AssetCubit extends Cubit<AssetState> {
         if(type == 'spending'){
           record = Spending.fromJson(card.data);
         }else {
-          record = Giftcard.fromJson(card.data);
+          var giftcard = Giftcard.fromJson(card.data['giftcard']);
+          record = {
+            "card": giftcard,
+            "rate": card.data['rates'],
+          };
         }
         emit(AssetLoaded(data: record));
       }

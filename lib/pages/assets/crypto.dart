@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:truvender/cubits/asset/asset_cubit.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/utils/utils.dart';
@@ -92,7 +93,7 @@ class _CryptoAssetsPageState extends State<CryptoAssetsPage> {
                           Crypto crypto = cryptocurrencies[index];
                           return GestureDetector(
                             onTap: (){
-
+                              context.pushNamed("asset", queryParams: { "type": "crypto",}, extra: crypto);
                             },
                             child: SizedBox(
                               width: (MediaQuery.of(context).size.width / 2) - 40,

@@ -30,7 +30,6 @@ class _FileUploadState extends State<FileUpload>
 
     if (uploader != null) {
       
-
       // widget.onSelected!(uploader.files.first);
 
       setState(() {

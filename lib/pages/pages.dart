@@ -25,3 +25,9 @@ export 'settings/pin.dart';
 export 'settings/profile.dart';
 export 'settings/notification.dart';
 export 'settings/banking.dart';
+
+
+export 'trade/giftcard.dart';
+export 'trade/crypto.dart';
+export 'trade/funds.dart';
+export 'trade/spending.dart';

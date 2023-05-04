@@ -45,6 +45,7 @@ abstract class AppTheme {
         inputDecorationTheme: const InputDecorationTheme(
           floatingLabelBehavior: FloatingLabelBehavior.auto,
         ),
+        dialogTheme: const DialogTheme(backgroundColor: _LightColors.card),
         iconTheme: const IconThemeData(color: AppColors.iconDark),
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.indigo,
@@ -65,6 +66,11 @@ abstract class AppTheme {
         ),
         scaffoldBackgroundColor: _DarkColors.background,
         cardColor: _DarkColors.card,
+        dialogTheme: const DialogTheme(
+          backgroundColor: _DarkColors.background,
+          alignment: Alignment.bottomCenter,
+          actionsPadding: EdgeInsets.all(20),
+        ),
         accentColor: _DarkColors.accent,
         inputDecorationTheme: const InputDecorationTheme(
           floatingLabelBehavior: FloatingLabelBehavior.auto,

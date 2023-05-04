@@ -5,18 +5,40 @@ import 'package:equatable/equatable.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/data/repositories/repositories.dart';
+import 'package:truvender/utils/utils.dart';
 
 part 'trade_state.dart';
 
 class TradeCubit extends Cubit<TradeState> {
   final AppBloc appBloc;
   TradeCubit({required this.appBloc}) : super(TradeInitial());
+  
 
   late TradeRepository tradeRepository =
       TradeRepository(dioInstance: appBloc.dio);
 
   late ExchangeRepository exchangeRepository =
       ExchangeRepository(dioInstance: appBloc.dio);
+
+  Future<void> getWallet({String? id}) async {
+    emit(PerformingTrade());
+    try {
+      var request = await tradeRepository.getWallet(id);
+      var asset = request.data['type'] == 1 && request.data['asset'] != null
+          ? Asset.fromJson(request.data['asset'])
+          : null;
+        Map<String, dynamic> walletData = {
+          ...request.data,
+          "currency": appBloc.authenticatedUser.currency,
+          "asset": asset,
+        };
+      var wallet = Wallet.fromJson(walletData);
+      emit(WalletLoaded(wallet: wallet));
+    } catch (e) {
+      emit(ProcessFailed(message: e.toString()));
+    }
+  }
+
 
   Future<void> submitGiftcardTrade({
     required String asset,
@@ -26,11 +48,16 @@ class TradeCubit extends Cubit<TradeState> {
     required int denomination,
     required int price,
     required bool isDefault,
-    required String reciept,
-    required List<Map> images,
+    required List images,
   }) async {
     emit(PerformingTrade());
     try {
+      var uploadedImages = [];
+      for (var image in images) {
+        var uploadRequest = await uploadFile(dioInstance: appBloc.dio, file: image['file']);
+        uploadedImages.add({ "url": uploadRequest['url'], "type": image['type']});
+      }
+      
       var request = await tradeRepository.tradeGiftcard(
         asset: asset,
         amount: amount,
@@ -39,8 +66,8 @@ class TradeCubit extends Cubit<TradeState> {
         denomination: denomination,
         price: price,
         isDefault: isDefault,
-        reciept: reciept,
-        images: images,
+        // reciept: reciept,
+        images: uploadedImages,
       );
       var response = request.data;
       if (response['status'] == true && response['data'] != null) {

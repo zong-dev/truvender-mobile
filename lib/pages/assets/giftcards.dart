@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:truvender/cubits/asset/asset_cubit.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/utils/utils.dart';
@@ -128,7 +129,9 @@ class _GiftcardAssetsPageState extends State<GiftcardAssetsPage> {
                               filteredGiftcards.isNotEmpty) {
                             var card = filteredGiftcards[index];
                             return GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                context.pushNamed('asset', extra: card, queryParams: { "type": "giftcard"});
+                              },
                               child: SizedBox(
                                 width: (MediaQuery.of(context).size.width / 2) -
                                     40,

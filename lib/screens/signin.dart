@@ -94,7 +94,7 @@ class _SigninFormState extends State<SigninForm> {
     var biometricsIsEnabled = await localStore.getBoolVal('biometricsEnabled');
     if (biometricsIsEnabled) {
       setState(() {
-        biometricsEnabled = true;
+        biometricsEnabled = biometricsIsEnabled == true;
       });
     }
   }

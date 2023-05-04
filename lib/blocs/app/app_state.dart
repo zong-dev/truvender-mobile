@@ -12,8 +12,9 @@ class Initialized extends AppState {}
 class Authenticated extends AppState {
   
   final User user;
+  final bool refreshed;
 
-  const Authenticated({ required this.user });
+  const Authenticated({ required this.user, this.refreshed = false });
 
   @override
   List<Object> get props => [ user ];

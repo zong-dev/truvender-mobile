@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:truvender/data/models/models.dart';
 
 class FundTradePage extends StatefulWidget {
-  const FundTradePage({ Key? key }) : super(key: key);
+  final Fundz? asset;
+  const FundTradePage({ Key? key, this.asset }) : super(key: key);
 
   @override
   _FundTradePageState createState() => _FundTradePageState();

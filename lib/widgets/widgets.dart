@@ -21,3 +21,4 @@ export 'indicator.dart';
 export 'loading.dart';
 export 'payment.dart';
 export 'modals.dart';
+export 'fileUploader.dart';

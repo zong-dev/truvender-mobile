@@ -39,8 +39,10 @@ class TextInput extends StatelessWidget {
       validator: rules,
       obscureText: obsecureText,
       maxLines: 1,
-      onChanged: (_){
-        if (onChange != null) {onChange!();}
+      onChanged: (_) {
+        if (onChange != null) {
+          onChange!();
+        }
       },
       cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
@@ -97,8 +99,13 @@ class TextInput extends StatelessWidget {
 }
 
 class PhoneInput extends StatelessWidget {
-
-  const PhoneInput({Key? key, required this.controller, this.bordered = true, this.label = 'Phone number', this.padding = const EdgeInsets.symmetric(horizontal: 10) }) : super(key: key);
+  const PhoneInput(
+      {Key? key,
+      required this.controller,
+      this.bordered = true,
+      this.label = 'Phone number',
+      this.padding = const EdgeInsets.symmetric(horizontal: 10)})
+      : super(key: key);
   final TextEditingController controller;
   final bool bordered;
   final String? label;
@@ -109,13 +116,12 @@ class PhoneInput extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        border: Border.all(
-          width: bordered ? 1.4 : 0,
-          color: AppColors.textFaded,
-        ),
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.all(Radius.circular(16))
-      ),
+          border: Border.all(
+            width: bordered ? 1.4 : 0,
+            color: AppColors.textFaded,
+          ),
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.all(Radius.circular(16))),
       child: InternationalPhoneNumberInput(
         textFieldController: controller,
         onInputChanged: (PhoneNumber number) {
@@ -130,7 +136,9 @@ class PhoneInput extends StatelessWidget {
         },
         hintText: label,
         textStyle: TextStyle(
-          color: controller.text.isEmpty ? AppColors.textFaded : AppColors.textDark,
+          color: controller.text.isEmpty
+              ? AppColors.textFaded
+              : AppColors.textDark,
           backgroundColor: Theme.of(context).cardColor,
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -146,6 +154,28 @@ class PhoneInput extends StatelessWidget {
         selectorConfig: const SelectorConfig(
           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
         ),
+      ),
+    );
+  }
+}
+
+class InputLabel extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final EdgeInsets padding;
+  const InputLabel({Key? key, required this.text, this.fontSize = 14, this.padding =  const EdgeInsets.only(top: 4, bottom: 12)}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w600,
+              fontSize: fontSize,
+            ),
       ),
     );
   }
