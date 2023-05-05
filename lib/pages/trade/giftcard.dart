@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -34,7 +33,9 @@ class _TradeGiftcardPageState extends State<TradeGiftcardPage> {
   @override
   void initState() {
     super.initState();
-    user = BlocProvider.of<AppBloc>(context).authenticatedUser;
+    setState(() {
+      user = BlocProvider.of<AppBloc>(context).authenticatedUser;
+    });
     BlocProvider.of<AssetCubit>(context).fetchCard(id: widget.card!.id);
   }
 
@@ -569,10 +570,10 @@ class _TradePreviewState extends State<TradePreview> {
                 ? findDefaultRate['sellerRate']
                 : findDefaultRate['buyerRate'];
           });
-          if(user.currency!.toLowerCase() != 'ngn'){
+          if (user.currency!.toLowerCase() != 'ngn') {
             BlocProvider.of<TradeCubit>(context).convertRateToLocalCurrency(
                 rate: rate * int.parse(tradeData['amount']));
-          }else {
+          } else {
             setState(() {
               convertedTotal = rate * int.parse(tradeData['amount']);
             });
@@ -638,7 +639,7 @@ class _TradePreviewState extends State<TradePreview> {
     return BlocListener<TradeCubit, TradeState>(
       listener: (context, state) {
         if (state is RateConverted) {
-          setState(() =>  convertedTotal = state.rate);
+          setState(() => convertedTotal = state.rate);
         } else if (state is WalletLoaded) {
           setState(() {
             wallet = state.wallet;
@@ -759,11 +760,17 @@ class _TradePreviewState extends State<TradePreview> {
                             value:
                                 "${widget.data['currency']} ${widget.data['value']} x ${widget.data['amount']}"),
                         verticalSpacing(12),
-                        KeyValue(name: "Rate", value: "${user.currency} ${moneyFormat(convertedTotal / widget.data['amount'])}"),
+                        KeyValue(
+                            name: "Rate",
+                            value:
+                                "${user.currency} ${moneyFormat(convertedTotal / widget.data['amount'])}"),
                       ]),
                     ),
                     verticalSpacing(26),
-                    TradeValueTile(title: widget.type == 'sell' ? "You Get" : "You Pay", value: "${user.currency} ${moneyFormat(convertedTotal)}"),
+                    TradeValueTile(
+                        title: widget.type == 'sell' ? "You Get" : "You Pay",
+                        value:
+                            "${user.currency} ${moneyFormat(convertedTotal)}"),
                     verticalSpacing(26),
                     widget.type == 'sell'
                         ? Expanded(
@@ -771,51 +778,11 @@ class _TradePreviewState extends State<TradePreview> {
                               child: Column(
                                 children: [
                                   FileUploader(
-                                    trigger: Padding(
-                                      padding: const EdgeInsets.symmetric(
+                                    trigger: const Padding(
+                                      padding: EdgeInsets.symmetric(
                                           horizontal: 5, vertical: 10.0),
-                                      child: DottedBorder(
-                                        borderType: BorderType.RRect,
-                                        radius: const Radius.circular(10),
-                                        dashPattern: const [10, 4],
-                                        strokeCap: StrokeCap.round,
-                                        color: Theme.of(context).accentColor,
-                                        child: Container(
-                                          width: double.infinity,
-                                          height: 48,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          decoration: BoxDecoration(
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                CupertinoIcons
-                                                    .cloud_upload_fill,
-                                                color: Theme.of(context)
-                                                    .accentColor,
-                                                size: 26,
-                                              ),
-                                              horizontalSpacing(12),
-                                              Text(
-                                                "Upload images",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                      fontSize: 15,
-                                                      color: Theme.of(context)
-                                                          .accentColor,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                      child: UploadButton(
+                                        title: "Upload Images",
                                       ),
                                     ),
                                     label: "Upload Card Images",
@@ -837,53 +804,9 @@ class _TradePreviewState extends State<TradePreview> {
                                           trigger: Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 5, vertical: 10.0),
-                                            child: DottedBorder(
-                                              borderType: BorderType.RRect,
-                                              radius: const Radius.circular(10),
-                                              dashPattern: const [10, 4],
-                                              strokeCap: StrokeCap.round,
-                                              color:
-                                                  Theme.of(context).accentColor,
-                                              child: Container(
-                                                width: double.infinity,
-                                                height: 48,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20),
-                                                decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .cardColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Icon(
-                                                      CupertinoIcons
-                                                          .cloud_upload_fill,
-                                                      color: Theme.of(context)
-                                                          .accentColor,
-                                                      size: 26,
-                                                    ),
-                                                    horizontalSpacing(12),
-                                                    Text(
-                                                      "Upload card $secondaryImageLabel images",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                            fontSize: 15,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .accentColor,
-                                                          ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                            child: UploadButton(
+                                                title:
+                                                    "Upload card $secondaryImageLabel images"),
                                           ),
                                           label:
                                               "Upload card $secondaryImageLabel images",

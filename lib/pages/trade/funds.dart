@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'package:truvender/cubits/asset/asset_cubit.dart';
 import 'package:truvender/cubits/trade/trade_cubit.dart';
@@ -256,12 +257,22 @@ class _FundsTradePreviewState extends State<FundsTradePreview> {
     }
   }
 
-  openStatusModal(String type, String message) {
+  openStatusModal(
+    String type,
+    String message,
+  ) {
     showStatus(
         type: type,
         title: type == "success" ? "Success" : "Failed",
         subTitle: message,
-        context: context);
+        context: context,
+        next: () {
+          if (type == 'success') {
+            context.pushNamed('assets', queryParams: {"type": "funds"});
+          } else {
+            Navigator.pop(context);
+          }
+        });
   }
 
   @override
@@ -361,7 +372,7 @@ class _FundsTradePreviewState extends State<FundsTradePreview> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      widget.asset!.name,
+                                      widget.asset.name,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
@@ -445,49 +456,14 @@ class _FundsTradePreviewState extends State<FundsTradePreview> {
                     verticalSpacing(26),
                     Expanded(
                       child: FileUploader(
-                        trigger: Padding(
-                          padding: const EdgeInsets.symmetric(
+                        trigger: const Padding(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 5, vertical: 10.0),
-                          child: DottedBorder(
-                            borderType: BorderType.RRect,
-                            radius: const Radius.circular(10),
-                            dashPattern: const [10, 4],
-                            strokeCap: StrokeCap.round,
-                            color: Theme.of(context).accentColor,
-                            child: Container(
-                              width: double.infinity,
-                              height: 48,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.cloud_upload_fill,
-                                    color: Theme.of(context).accentColor,
-                                    size: 26,
-                                  ),
-                                  horizontalSpacing(12),
-                                  Text(
-                                    "Upload Screenshot/Receipt",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          fontSize: 15,
-                                          color: Theme.of(context).accentColor,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          child:
+                              UploadButton(title: "Upload Screenshot/Receipt"),
                         ),
                         label: "Upload Screenshot/Receipt",
-                        isMultiple: true,
+                        isMultiple: false,
                         onSelected: (List files) {
                           setState(() {
                             image = File(files.first.path);

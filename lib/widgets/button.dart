@@ -1,5 +1,8 @@
+import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:truvender/theme.dart';
+import 'package:truvender/utils/spacing.dart';
 
 class Button extends StatelessWidget {
   Button.primary(
@@ -100,6 +103,48 @@ class TileButton extends StatelessWidget {
         Icons.chevron_right_rounded,
         size: 26,
         color: Theme.of(context).colorScheme.primary.withGreen(34),
+      ),
+    );
+  }
+}
+
+class UploadButton extends StatelessWidget {
+  final String title;
+  const UploadButton({Key? key, required this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DottedBorder(
+      borderType: BorderType.RRect,
+      radius: const Radius.circular(10),
+      dashPattern: const [10, 4],
+      strokeCap: StrokeCap.round,
+      color: Theme.of(context).accentColor,
+      child: Container(
+        width: double.infinity,
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(10)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(
+              CupertinoIcons.cloud_upload_fill,
+              color: Theme.of(context).accentColor,
+              size: 26,
+            ),
+            horizontalSpacing(12),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontSize: 15,
+                    color: Theme.of(context).accentColor,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }

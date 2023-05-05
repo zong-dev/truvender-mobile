@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'package:truvender/cubits/trade/trade_cubit.dart';
 import 'package:truvender/data/models/models.dart';
@@ -302,6 +303,25 @@ class _PreviewState extends State<Preview> {
     }
   }
 
+  openStatusModal(
+    String type,
+    String message,
+  ) {
+    showStatus(
+      type: type,
+      title: type == "success" ? "Success" : "Failed",
+      subTitle: message,
+      context: context,
+      next: () {
+        if (type == 'success') {
+          context.pushNamed('assets', queryParams: {"type": "spending-card"});
+        } else {
+          Navigator.pop(context);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<TradeCubit, TradeState>(
@@ -321,11 +341,14 @@ class _PreviewState extends State<Preview> {
           setState(() => loading = true);
         }else if(state is TradeFailed){
           setState(() => loading = false);
-          showStatus(
-              type: "error",
-              title: "Failed",
-              subTitle: state.message,
-              context: context);
+           openStatusModal("error",
+             state.message);
+        } else if (state is TradeSuccess) {
+          setState(() {
+            loading = false;
+          });
+          openStatusModal("success",
+              "Trade was submitted successfully and awaiting confirmation");
         }
       },
       child: AppWrapper(
