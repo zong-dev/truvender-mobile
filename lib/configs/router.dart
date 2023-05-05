@@ -179,7 +179,7 @@ class AppRouter {
         path: '/virtualNumber',
         name: 'virtualNumber',
         builder: (BuildContext context, GoRouterState state) =>
-            const CryptoTradePage(),
+            const FundTradePage(),
       ),
 
       /**
@@ -203,8 +203,9 @@ class AppRouter {
             }
 
             return BlocProvider<BillsCubit>(
-              create: (context) =>
-                  BillsCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+              create: (context) {
+                return BillsCubit(appBloc: BlocProvider.of<AppBloc>(context));
+              },
               child: buildView(),
             );
           }),

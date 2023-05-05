@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/utils/utils.dart';
@@ -387,6 +388,88 @@ class _CardValueModalState extends State<CardValueModal> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+class StatusModal extends StatelessWidget {
+  final String type;
+  final String title;
+  final String? subTitle;
+  Function? next;
+  StatusModal({ Key? key, required this.type, required this.title, this.subTitle, this.next }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    pickIcon() {
+      String imagePath = "assets/images/info.png";
+      if (type == 'success') {
+        imagePath = "assets/images/success.png";
+      }else if(type == 'error'){
+        imagePath = "assets/images/error.png";
+      }
+      return Image.asset(
+        imagePath, 
+        height: 100,
+        width: 120,
+      );
+    }
+
+
+    return Container(
+      height: MediaQuery.of(context).size.height / 3.1,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background.withOpacity(.8),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 26),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          pickIcon(),
+          verticalSpacing(20),
+          Text(
+            title, 
+            style: GoogleFonts.montserrat(
+              fontSize:  18,
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w900
+            ),
+          ),
+          verticalSpacing(12),
+          Text(
+            subTitle ?? '',
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          verticalSpacing(40),
+          Button.primary(onPressed: () {
+            if(next != null){
+              next!();
+            }else {
+               Navigator.pop(context);
+            }
+          }, background: AppColors.primary, foreground: AppColors.secoundaryLight,title: "Close",),
+
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/cubits/bills/bills_cubit.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/theme.dart';
@@ -77,7 +78,7 @@ class _MobileRefillPageState extends State<MobileRefillPage> {
   void _openRefillPreview() {
     if(localWallet.balance >= double.parse(_amountController.text)){
       if (type == 'data' && (variation == {} || variation['name'] == null)) {
-        notify(context, "Select a data bundle to continue", "error");
+       toastMessage(message: "Select a data bundle to continue", context: context);
         return;
       } else {
         if (_refillKey.currentState!.validate()) {
@@ -98,11 +99,15 @@ class _MobileRefillPageState extends State<MobileRefillPage> {
               context: context,
               height: 520,
               radius: 12,
-              child: BillPreview(data: data, wallet: localWallet));
+             child: BlocProvider<BillsCubit>(
+                create: (context) =>
+                    BillsCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+                child: BillPreview(data: data, wallet: localWallet),
+              ));
         }
       }
     }else {
-      notify(context, "Insufficient Wallet Balance!", "error");
+      showStatus(type: "error", title: "Failed!", context: context, subTitle: "Insufficient Wallet Balance");
     }
   }
 

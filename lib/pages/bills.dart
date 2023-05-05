@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/cubits/bills/bills_cubit.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/theme.dart';
@@ -16,7 +17,6 @@ class BillPaymentPage extends StatefulWidget {
 }
 
 class _BillPaymentPageState extends State<BillPaymentPage> {
-
   late Wallet localWallet;
 
   final TextEditingController _customerController = TextEditingController();
@@ -55,10 +55,19 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
 
   _filterVariations() {
     String toFilterFor = provider['name'];
-    List filtered = type != 'cable' 
-      ? variations.where((variation) => variation["name"].toString()
-        .toLowerCase().contains("ELECTRICITY")).toList() 
-      : variations.where((variation) => variation["name"].toString().toLowerCase().contains(toFilterFor)).toList();
+    List filtered = type != 'cable'
+        ? variations
+            .where((variation) => variation["name"]
+                .toString()
+                .toLowerCase()
+                .contains("ELECTRICITY"))
+            .toList()
+        : variations
+            .where((variation) => variation["name"]
+                .toString()
+                .toLowerCase()
+                .contains(toFilterFor))
+            .toList();
     setState(() => plans = filtered);
   }
 
@@ -83,57 +92,73 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
   }
 
   void _openRefillPreview() {
-    if (type == 'data' && (plan == {} || plan['name'] == null)) {
-      notify(context, "Select a data bundle to continue", "error");
-      return;
-    } else {
-      if (_billFormKey.currentState!.validate()) {
-        setState(() {
-          data = {
-            "amount": _amountController.text,
-            "customer": _customerController.text,
-            "type": type == 'cable' ? 'Cable Subscription' : 'Electricity Bill',
-            "provider": provider['name'],
-            "fee": plan['fee'],
-            "variation": plan['biller_name'],
-            "country": localWallet.currency,
-            "item_code": plan['item_code'],
-            "biller_code": plan['biller_code']
-          };
-        });
-        openBottomSheet(
-            context: context,
-            height: 520,
-            radius: 12,
-            child: BillPreview(data: data, wallet: localWallet));
+    if (localWallet.balance >= double.parse(_amountController.text)) {
+      if (type == 'data' && (plan == {} || plan['name'] == null)) {
+        toastMessage(
+            message: "Select a data bundle to continue", context: context);
+        return;
+      } else {
+        if (_billFormKey.currentState!.validate()) {
+          setState(() {
+            data = {
+              "amount": _amountController.text,
+              "customer": _customerController.text,
+              "type":
+                  type == 'cable' ? 'Cable Subscription' : 'Electricity Bill',
+              "provider": provider['name'],
+              "fee": plan['fee'],
+              "variation": plan['biller_name'],
+              "country": localWallet.currency,
+              "item_code": plan['item_code'],
+              "biller_code": plan['biller_code']
+            };
+          });
+          openBottomSheet(
+              context: context,
+              height: 520,
+              radius: 12,
+              child: BlocProvider<BillsCubit>(
+                create: (context) =>
+                    BillsCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+                child: BillPreview(data: data, wallet: localWallet),
+              ));
+        }
       }
+    } else {
+      showStatus(
+          type: "error",
+          title: "Failed!",
+          context: context,
+          subTitle: "Insufficient Wallet Balance");
     }
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<BillsCubit, BillsState>(
       listener: (context, state) {
-        if(state is VariationLoaded){
+        if (state is VariationLoaded) {
           setState(() {
             variations = state.variations;
-            planTitle = type == 'cable' ? "Select Banquet Plan" : "Select Provider";
+            planTitle =
+                type == 'cable' ? "Select Banquet Plan" : "Select Provider";
           });
           _filterVariations();
-        }else if(state is CustomerVerified){
-         setState(() {
-           validated = true;
-         });
-         _openRefillPreview();
-        }else if(state is WalletLoaded){
+        } else if (state is CustomerVerified) {
+          setState(() {
+            validated = true;
+          });
+          _openRefillPreview();
+        } else if (state is WalletLoaded) {
           setState(() {
             localWallet = state.wallet;
             processing = false;
           });
-        }else if(state is RequestLoading){
+        } else if (state is RequestLoading) {
           setState(() => processing = true);
         } else if (state is VerificationFailed) {
           setState(() => processing = false);
+          notify(context, "Vailed to verify smart card number", "error");
         }
       },
       child: Wrapper(
@@ -237,7 +262,9 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 12),
                         child: Text(
-                          type == 'cable' ? "Banquet Plans" : "Service Provider",
+                          type == 'cable'
+                              ? "Banquet Plans"
+                              : "Service Provider",
                           style:
                               Theme.of(context).textTheme.bodyMedium!.copyWith(
                                     color: Theme.of(context).accentColor,
@@ -263,8 +290,7 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                plan != {} &&
-                                        plan['biller_name'] != null
+                                plan != {} && plan['biller_name'] != null
                                     ? plan['biller_name']
                                     : planTitle,
                                 style: Theme.of(context)
@@ -286,7 +312,6 @@ class _BillPaymentPageState extends State<BillPaymentPage> {
                       ),
                     ],
                   ),
-                 
                   verticalSpacing(28),
                   Padding(
                     padding: const EdgeInsets.only(top: 6, bottom: 12),

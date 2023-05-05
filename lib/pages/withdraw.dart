@@ -86,37 +86,34 @@ class _BankWithdrawState extends State<BankWithdraw> {
     user = widget.user;
     setState(() {
       hasSetWithdrawAccount =
-          user.withdrawAccount != null &&
-              user.withdrawAccount!['name'] != null;
+          user.withdrawAccount != null && user.withdrawAccount!['name'] != null;
     });
   }
 
   handleWithdrawalForm() {
     BlocProvider.of<WalletCubit>(context)
         .withdraw(amount: double.parse(_amountController.text));
-
   }
 
   transactionPreview() {
     if (!processing && user.withdrawAccount!['account'] != null) {
-    openBottomSheet(
-      radius: 16,
-      context: context,
-      child: TransactionPreview(
-        wallet: widget.wallet,
-        data: {
-          "type": "Debit",
-          "amount": double.parse(_amountController.text),
-          "fee": 0,
-          "label": "Withdraw",
-        },
-        callBack: handleWithdrawalForm,
-      ),
-      label: "Transaction Preview",
-    );
+      openBottomSheet(
+        radius: 16,
+        context: context,
+        child: TransactionPreview(
+          wallet: widget.wallet,
+          data: {
+            "type": "Debit",
+            "amount": double.parse(_amountController.text),
+            "fee": 0,
+            "label": "Withdraw",
+          },
+          callBack: handleWithdrawalForm,
+        ),
+        label: "Transaction Preview",
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -203,53 +200,59 @@ class _BankWithdrawState extends State<BankWithdraw> {
                     ),
               ),
             ),
-           !hasSetWithdrawAccount ? GestureDetector(
-              onTap: () => context
-                  .pushNamed("settings", queryParams: {"type": "banking"}),
-              child: Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                  color: AppColors.secoundaryLight,
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info,
-                      color: AppColors.primary,
-                      size: 30,
+            !hasSetWithdrawAccount
+                ? GestureDetector(
+                    onTap: () => context.pushNamed("settings",
+                        queryParams: {"type": "banking"}),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        color: AppColors.secoundaryLight,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.info,
+                            color: AppColors.primary,
+                            size: 30,
+                          ),
+                          horizontalSpacing(6),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Notice!",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 14,
+                                    ),
+                              ),
+                              Text(
+                                "You need to add an account for withdrawal. Click to add account",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                    horizontalSpacing(6),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Notice!",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 14,
-                                  ),
-                        ),
-                        Text(
-                          "You need to add an account for withdrawal. Click to add account",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13,
-                                  ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ): const SizedBox(),
+                  )
+                : const SizedBox(),
             verticalSpacing(28),
             TextInput(
               label: "",
@@ -325,7 +328,6 @@ class _WalletWithdrawState extends State<WalletWithdraw> {
           "label": "Withdraw",
         },
         callBack: handleSendForm,
-
       ),
       label: "Transaction Preview",
     );
@@ -378,10 +380,12 @@ class _WalletWithdrawState extends State<WalletWithdraw> {
       listener: (context, state) {
         if (state is TransactionFailed) {
           setState(() => processing = false);
-          notify(
-              context,
-              "Service unavailable! Transaction failed. Try again later",
-              "error");
+          showStatus(
+              type: "error",
+              title: "Failed",
+              subTitle:
+                  "Service unavailable! Transaction failed. Try again later",
+              context: context);
         } else if (state is ProcessingTransaction) {
           setState(() => processing = true);
         } else if (state is TransactionCompleted) {
@@ -390,8 +394,15 @@ class _WalletWithdrawState extends State<WalletWithdraw> {
               title: "Transaction Successful!",
               body:
                   "${widget.wallet.currency}${moneyFormat(state.transaction.amount)} withdrawal was successful");
-          context.pushNamed('transaction',
-              extra: {'transaction': state.transaction});
+          showStatus(
+              type: "success",
+              subTitle: "Trasfer successful!",
+              title: "Weldone!",
+              next: () {
+                context.pushNamed('transaction',
+                    extra: {'transaction': state.transaction});
+              },
+              context: context);
         }
       },
       child: Form(

@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:truvender/widgets/widgets.dart';
 
+
 export 'methods.dart';
 export 'spacing.dart';
 export 'notifier.dart';
 export 'network.dart';
 export 'widget.dart';
+export 'custom_validators.dart';
 
 List actions = [
   {

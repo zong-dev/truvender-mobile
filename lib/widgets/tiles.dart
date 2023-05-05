@@ -657,3 +657,55 @@ class WalletBalanceTile extends StatelessWidget {
     );
   }
 }
+
+
+
+
+class TradeValueTile extends StatelessWidget {
+  final String title;
+  final String value;
+  const TradeValueTile({Key? key, required this.value, required this.title})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Icon(
+                CupertinoIcons.rectangle_fill_on_rectangle_fill,
+                size: 28,
+                color: Colors.amber.shade600,
+              ),
+              horizontalSpacing(8),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+              )
+            ],
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Theme.of(context).accentColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
+          )
+        ],
+      ),
+    );
+  }
+}

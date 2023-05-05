@@ -18,13 +18,14 @@ class User extends Equatable {
 
   int notifyType;
 
-  num? txLimit;
+  double? txLimit;
   String? kycStatus;
   bool? verified;
   bool hasPin;
   String? lastLogin;
   Map<String, dynamic>? withdrawAccount;
   Map<String, dynamic>? banking;
+  double dailyTxLimit;
 
   User({
     required this.id,
@@ -43,6 +44,7 @@ class User extends Equatable {
     this.lastLogin,
     this.txLimit,
     this.currency,
+    this.dailyTxLimit = 0,
     this.hasPin = false,
     this.requireOtp = false,
     this.withdrawAccount ,
@@ -65,6 +67,7 @@ class User extends Equatable {
         lastLogin,
         currency,
         txLimit,
+        dailyTxLimit,
         requireOtp,
         hasPin,
         country,
@@ -89,6 +92,7 @@ class User extends Equatable {
       lastLogin: json['lastLogin'],
       txLimit: json['txLimit'],
       currency: json['currency'],
+      dailyTxLimit: json['dailyTxLimit'],
       requireOtp: json['requireOtp'],
       hasPin: json['hasPin'],
       notifyType: json['notifyType'],
@@ -133,7 +137,7 @@ class User extends Equatable {
     String? email_verified_at,
     String? phone_verified_at,
     bool? has_verify_otp,
-    num? txLimit,
+    double? txLimit,
     String? kycStatus,
     bool? verified,
     bool? hasPin,
@@ -153,6 +157,7 @@ class User extends Equatable {
       phone_verified_at: phone_verified_at ?? this.phone_verified_at,
       has_verify_otp: has_verify_otp ?? this.has_verify_otp,
       txLimit: txLimit ?? this.txLimit,
+      dailyTxLimit: dailyTxLimit,
       country: country ?? this.country,
       kycStatus: kycStatus ?? this.kycStatus,
       verified: verified ?? this.verified,

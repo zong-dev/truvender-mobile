@@ -182,8 +182,8 @@ class Fundz extends Equatable {
   double rate;
   double? minTradableAmount;
   double? maxTradableAmount;
-  List<String>? countries;
-  List<String>? accounts;
+  String? country;
+  String? account;
 
   Fundz(
       {required this.id,
@@ -192,8 +192,8 @@ class Fundz extends Equatable {
       required this.image,
       required this.isAvailable,
       required this.rate,
-      this.countries,
-      this.accounts,
+      this.country,
+      this.account,
       this.minTradableAmount = 10,
       this.maxTradableAmount = 0});
 
@@ -204,8 +204,8 @@ class Fundz extends Equatable {
         image,
         isAvailable,
         rate,
-        countries,
-        accounts,
+        country,
+        account,
         minTradableAmount
       ];
 
@@ -217,8 +217,8 @@ class Fundz extends Equatable {
       isAvailable: json['isAvailble'],
       description: json['description'],
       rate: json['rate'],
-      countries: json['countries'],
-      accounts: json['accounts'],
+      country: json['country'],
+      account: json['account'],
       minTradableAmount: json['minTradableAmount'],
       maxTradableAmount: json['maxTradableAmount'],
     );
@@ -232,8 +232,8 @@ class Fundz extends Equatable {
     data['isAvailable'] = isAvailable;
     data['description'] = description;
     data['rate'] = rate;
-    data['countries'] = countries;
-    data['accounts'] = accounts;
+    data['country'] = country;
+    data['account'] = account;
     data['minTradableAmount'] = minTradableAmount;
     data['maxTradableAmount'] = maxTradableAmount;
 

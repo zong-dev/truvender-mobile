@@ -47,15 +47,17 @@ class AssetCubit extends Cubit<AssetState> {
     emit(AssetLoading());
     try {
       var funds = await assetRepository.getTradableFunds(id);
-      if (funds.status == 200) {
+      if (id == null) {
         var records = funds.data.map((crypto) => Fundz.fromJson(crypto));
         emit(AssetLoaded(data: records));
+      }else {
+        emit(AssetLoaded(data: Fundz.fromJson(funds.data)));
       }
-      emit(AssetInitial());
     } catch (e) {
       emit(AssetLoadingFialed(error: e));
     }
   }
+
 
   Future<void> loadSpendingCards({String? query, int page = 0}) async {
     emit(AssetLoading());

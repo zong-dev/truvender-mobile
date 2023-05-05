@@ -59,7 +59,7 @@ class _TradeGiftcardPageState extends State<TradeGiftcardPage> {
                 child: type.isNotEmpty
                     ? TradeForm(type: type, asset: asset, rates: rates)
                     : TypeModal(
-                        label: ucFirst("Amazon"),
+                        label: ucFirst(asset.name),
                         onSelect: (value) {
                           setState(() => type = value);
                         },
@@ -84,7 +84,6 @@ class TradeForm extends StatefulWidget {
 }
 
 class _TradeFormState extends State<TradeForm> {
-  final currentProcess = 1;
   late ValueNotifier<double> currentProgress;
 
   late Map type;
@@ -570,8 +569,14 @@ class _TradePreviewState extends State<TradePreview> {
                 ? findDefaultRate['sellerRate']
                 : findDefaultRate['buyerRate'];
           });
-          BlocProvider.of<TradeCubit>(context).convertRateToLocalCurrency(
-              rate: rate * int.parse(tradeData['amount']));
+          if(user.currency!.toLowerCase() != 'ngn'){
+            BlocProvider.of<TradeCubit>(context).convertRateToLocalCurrency(
+                rate: rate * int.parse(tradeData['amount']));
+          }else {
+            setState(() {
+              convertedTotal = rate * int.parse(tradeData['amount']);
+            });
+          }
         }
       }
     }
@@ -596,6 +601,7 @@ class _TradePreviewState extends State<TradePreview> {
       amount: convertedTotal,
       type: widget.type,
       rate: rateId,
+      total: convertedTotal,
       denomination: tradeData['amount'],
       price: int.parse(tradeData['value']),
       isDefault: isDefaultRate,
@@ -632,9 +638,7 @@ class _TradePreviewState extends State<TradePreview> {
     return BlocListener<TradeCubit, TradeState>(
       listener: (context, state) {
         if (state is RateConverted) {
-          setState(() {
-            convertedTotal = state.rate;
-          });
+          setState(() =>  convertedTotal = state.rate);
         } else if (state is WalletLoaded) {
           setState(() {
             wallet = state.wallet;
@@ -722,7 +726,7 @@ class _TradePreviewState extends State<TradePreview> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "Amazon ${widget.data['currency']}",
+                                    "${widget.asset.name} ${widget.data['currency']}",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
@@ -755,11 +759,11 @@ class _TradePreviewState extends State<TradePreview> {
                             value:
                                 "${widget.data['currency']} ${widget.data['value']} x ${widget.data['amount']}"),
                         verticalSpacing(12),
-                        const KeyValue(name: "Rate", value: "NGN 12,000.00"),
+                        KeyValue(name: "Rate", value: "${user.currency} ${moneyFormat(convertedTotal / widget.data['amount'])}"),
                       ]),
                     ),
                     verticalSpacing(26),
-                    const TradeTile(title: "You Get", value: "NGN 20,000"),
+                    TradeValueTile(title: widget.type == 'sell' ? "You Get" : "You Pay", value: "${user.currency} ${moneyFormat(convertedTotal)}"),
                     verticalSpacing(26),
                     widget.type == 'sell'
                         ? Expanded(
@@ -916,55 +920,6 @@ class _TradePreviewState extends State<TradePreview> {
                 ),
               )
             : const LoadingWidget(),
-      ),
-    );
-  }
-}
-
-class TradeTile extends StatelessWidget {
-  final String title;
-  final String value;
-  const TradeTile({Key? key, required this.value, required this.title})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Icon(
-                CupertinoIcons.rectangle_fill_on_rectangle_fill,
-                size: 28,
-                color: Colors.amber.shade600,
-              ),
-              horizontalSpacing(8),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).accentColor,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                    ),
-              )
-            ],
-          ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).accentColor,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
-          )
-        ],
       ),
     );
   }

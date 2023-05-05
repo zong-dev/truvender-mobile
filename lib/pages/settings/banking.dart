@@ -219,7 +219,7 @@ class _BankSettingPageState extends State<BankSettingPage> {
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            "Oduma Chigozie Daniel",
+                           accountInfo['account_name'].toString(),
                             textAlign: TextAlign.end,
                             style:
                                 Theme.of(context).textTheme.bodyMedium!.copyWith(

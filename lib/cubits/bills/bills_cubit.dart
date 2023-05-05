@@ -85,13 +85,17 @@ class BillsCubit extends Cubit<BillsState> {
   }) async {
     emit(RequestLoading());
     try {
-      if(wallet != null && wallet.balance > (amount + fee )){
-        var request = await billRepository.payment(customer: customer, amount: amount, type: type, country: country, varation: varation, fee: fee);
-        emit(PaymentSuccess(responseData: request.data));
-      }else if(wallet == null){
-        emit(const BillRequestFailed(message: "Wallet record could not be loaded"));
-      } else if (wallet.balance < (amount + fee)) {
-        emit(const BillRequestFailed(message: "Insufficient wallet balance"));
+      if(varation =="airtime" && amount > 20000){
+        emit(const BillRequestFailed(message: "Maximum airtime limit exceeded"));
+      }else {
+        if(wallet != null && wallet.balance > (amount + fee )){
+          var request = await billRepository.payment(customer: customer, amount: amount, type: type, country: country, varation: varation, fee: fee);
+          emit(PaymentSuccess(responseData: request.data));
+        }else if(wallet == null){
+          emit(const BillRequestFailed(message: "Wallet record could not be loaded"));
+        } else if (wallet.balance < (amount + fee)) {
+          emit(const BillRequestFailed(message: "Insufficient wallet balance"));
+        }
       }
     } catch (e) {
       emit(BillRequestFailed(message: e.toString()));

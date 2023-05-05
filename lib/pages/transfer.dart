@@ -118,7 +118,7 @@ class _TransferPageState extends State<TransferPage> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 18, horizontal: 12),
                         child: Text(
-                          "NGN",
+                          "${user.currency}",
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium!

@@ -67,13 +67,19 @@ class _BillPreviewState extends State<BillPreview> {
             validated = true;
           });
         } else if (state is VerificationFailed) {
-          setState(() {
-            processing = false;
-          });
+          setState(() => processing = false);
+          showStatus(type: "error", title: "Failed", subTitle: "Failed to verify customer", context: context);
         } else if (state is RequestLoading) {
           setState(() {
             processing = true;
           });
+        }else if(state is BillRequestFailed){
+          setState(() => processing = false);
+          showStatus(
+              type: "error",
+              title: "Failed",
+              subTitle: state.message,
+              context: context);
         }
       },
       child: Expanded(
@@ -176,6 +182,11 @@ class _TransactionPreviewState extends State<TransactionPreview> {
           });
         }else if (state is TransactionFailed) {
           setState(() => processing = false);
+           showStatus(
+              type: "error",
+              title: "Failed",
+              subTitle: "Failed to process transaction, try again later",
+              context: context);
         }
       },
       child: WillPopScope(

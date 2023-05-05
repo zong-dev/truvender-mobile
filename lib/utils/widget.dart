@@ -4,6 +4,21 @@ import 'package:go_router/go_router.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
+
+showStatus({
+  required String type,
+  required String title,
+  String? subTitle,
+  Function? next,
+  required BuildContext context
+}) {
+  showModalBottomSheet(
+    backgroundColor: Colors.transparent,
+    context: context, builder: (_) {
+      return StatusModal(type: type, title: title, subTitle: subTitle, next: next );
+  });
+}
+
 openBottomSheet(
     {required BuildContext context,
     double height = 420,
