@@ -9,10 +9,8 @@ import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class DashboardHomePage extends StatefulWidget {
-  final Function onPageSelected;
   const DashboardHomePage({
     super.key,
-    required this.onPageSelected,
   });
 
   @override
@@ -96,7 +94,6 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                 child: HomeCard(
                   currency: user.currency!,
                   balance: balance,
-                  pageHandler: widget.onPageSelected,
                 ),
               ),
             ),

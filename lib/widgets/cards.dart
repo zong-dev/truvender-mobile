@@ -15,14 +15,13 @@ import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class HomeCard extends StatefulWidget {
-  final Function? pageHandler;
+
   final double balance;
   final String currency;
   HomeCard(
       {Key? key,
       required this.balance,
-      required this.currency,
-      this.pageHandler})
+      required this.currency})
       : super(key: key);
 
   @override
@@ -120,9 +119,7 @@ class _HomeCardState extends State<HomeCard> {
             left: 24,
             child: GestureDetector(
               onTap: () {
-                if (widget.pageHandler != null) {
-                  widget.pageHandler!(1);
-                }
+                context.pushNamed('dashboard', queryParams: {"index": '0'});
               },
               child: Container(
                 width: 80,

@@ -9,8 +9,7 @@ import 'package:truvender/theme.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class DashboardAccountPage extends StatefulWidget {
-  final Function onPageSelected;
-  const DashboardAccountPage({Key? key, required this.onPageSelected})
+  const DashboardAccountPage({Key? key})
       : super(key: key);
 
   @override

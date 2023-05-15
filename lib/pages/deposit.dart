@@ -85,9 +85,10 @@ class _FiatDepositState extends State<FiatDeposit>
       "phone": user.phone!,
       "email": user.email!,
       'options': 'card, banktransfer, ussd',
-       'tx_ref': fundingData['trxn_ref'],
+      'tx_ref': fundingData['trxn_ref'],
       // "description": 'Payment for items in cart',
-      "icon": 'https://res.cloudinary.com/dtjylm0hd/image/upload/v1678488667/uploads/truvender_grvykn.png',
+      "icon":
+          'https://res.cloudinary.com/dtjylm0hd/image/upload/v1678488667/uploads/truvender_grvykn.png',
       'public_key': publicKey,
       'sk_key': secretKey
     };
@@ -97,10 +98,25 @@ class _FiatDepositState extends State<FiatDeposit>
         builder: (context) => AdeFlutterWavePay(data),
       ),
     ).then((response) {
-      BlocProvider.of<WalletCubit>(context).completeFunding(
-        ref: fundingData['ref']
-      );
+      BlocProvider.of<WalletCubit>(context)
+          .completeFunding(ref: fundingData['ref']);
     });
+  }
+
+  openStatusModal(String type, String message, {dynamic extra}) {
+    String title = type == 'success' ? 'Success' : "Failed";
+    showStatus(
+        type: type,
+        title: title,
+        context: context,
+        subTitle: message,
+        next: () {
+          if (type == 'success') {
+            context.pushNamed('transaction', extra: {'transaction': extra});
+          } else {
+            Navigator.pop(context);
+          }
+        });
   }
 
   @override
@@ -116,7 +132,10 @@ class _FiatDepositState extends State<FiatDeposit>
           });
         } else if (state is TransactionFailed) {
           setState(() => processing = false);
-          notify(context, "Opps! Could not verify transaction try again later", "error");
+          notify(context, "Opps! Could not verify transaction try again later",
+              "error");
+          openStatusModal(
+              "error", "Could not verify transaction try again late");
         } else if (state is ProcessingTransaction) {
           setState(() => processing = true);
         } else if (state is TransactionCompleted) {
@@ -125,8 +144,9 @@ class _FiatDepositState extends State<FiatDeposit>
               title: "Transaction Successful!",
               body:
                   "${user.currency}${moneyFormat(state.transaction.amount)} deposit to wallet was successful");
-          context.pushNamed('transaction',
-              extra: {'transaction': state.transaction});
+          openStatusModal("success",
+              "${user.currency}${moneyFormat(state.transaction.amount)} deposit was successful",
+              extra: state.transaction);
         }
       },
       child: Column(
@@ -191,14 +211,17 @@ class _FiatDepositState extends State<FiatDeposit>
                         type: TextInputType.number,
                         bordered: true,
                         iconPreffix: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 18),
                           child: Text(
                             user.currency ?? "NGN",
-                            style:  Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).accentColor
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).accentColor),
                           ),
                         ),
                         rules: MultiValidator(

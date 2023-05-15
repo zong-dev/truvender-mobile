@@ -10,8 +10,7 @@ import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class DashboardWalletPage extends StatefulWidget {
-  final Function onPageSelected;
-  const DashboardWalletPage({Key? key, required this.onPageSelected})
+  const DashboardWalletPage({Key? key})
       : super(key: key);
 
   @override

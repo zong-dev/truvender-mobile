@@ -17,6 +17,7 @@ export 'trade.dart';
 export 'transfer.dart';
 export 'deposit.dart';
 export 'withdraw.dart';
+export 'virtualNumber.dart';
 export 'loading.dart';
 
 

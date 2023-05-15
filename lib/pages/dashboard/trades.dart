@@ -6,8 +6,7 @@ import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class DashboardTradesPage extends StatefulWidget {
-  final Function onPageSelected;
-  const DashboardTradesPage({Key? key, required this.onPageSelected})
+  const DashboardTradesPage({Key? key})
       : super(key: key);
 
   @override

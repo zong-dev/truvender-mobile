@@ -7,3 +7,4 @@ export 'kyc.dart';
 export 'support.dart';
 export 'trade.dart';
 export 'wallet.dart';
+export 'virtualNumber.dart';

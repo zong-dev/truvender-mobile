@@ -64,8 +64,10 @@ class AppRouter {
       ),
       GoRoute(
         path: '/',
+        name: 'dashboard',
         builder: (BuildContext context, GoRouterState state) {
-          return const DashboardScreen();
+          String index = state.queryParams['index'] ?? '0';
+          return  DashboardScreen(index: int.parse(index),);
         },
       ),
       GoRoute(
