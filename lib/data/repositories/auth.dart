@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
+  static String? baseUrl = "http://192.168.0.148:6080/v1";
   static String endpoint = '$baseUrl';
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -67,6 +67,8 @@ class AuthRepository {
     required String phone,
     required String username,
     required String password,
+    required String? country,
+    required String? currency,
     String? referrer,
   }) async {
     try {
@@ -76,6 +78,8 @@ class AuthRepository {
         "password": password,
         "email": email,
         "phone": phone,
+        "country": country ?? '',
+        "currency": currency ?? '',
         "referrer": referrer!.isNotEmpty ? referrer : ''
       });
       return response;

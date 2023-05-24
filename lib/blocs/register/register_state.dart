@@ -16,7 +16,6 @@ class RegistrationFailed extends RegisterState {
 
 
   @override
-  // TODO: implement props
   List<Object> get props => [message];
 
   @override
@@ -33,7 +32,6 @@ class RegisterSuccess extends RegisterState {
   const RegisterSuccess({ required this.verifiableRecord});
 
   @override
-  // TODO: implement props
   List<Object> get props => [ verifiableRecord  ];
 }
 
@@ -44,12 +42,10 @@ class VerificationFailed extends RegisterState {
   const VerificationFailed({required this.message});
 
   @override
-  // TODO: implement props
   List<Object> get props => [message];
 
   @override
   String toString() {
-    // TODO: implement toString
     return 'LoginFailed {error: $message}';
   }
   

@@ -1,13 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:truvender/theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:truvender/blocs/app/app_bloc.dart';
+import 'package:truvender/data/models/models.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/wrapper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SupportScreen extends StatelessWidget {
+class SupportScreen extends StatefulWidget {
   const SupportScreen({Key? key}) : super(key: key);
 
+  @override
+  State<SupportScreen> createState() => _SupportScreenState();
+}
+
+class _SupportScreenState extends State<SupportScreen> {
+  late User user;
+  @override
+  void initState() {
+    super.initState();
+    user = BlocProvider.of<AppBloc>(context).authenticatedUser;
+  }
   @override
   Widget build(BuildContext context) {
     Future<void> _launchUrl(String path) async {
@@ -26,21 +39,40 @@ class SupportScreen extends StatelessWidget {
             height: 280,
             width: double.maxFinite,
             child: Image.asset(
-              '/assets/images/customer_service.png',
+              'assets/images/customer_service.png',
               height: 260,
             ),
           ),
           verticalSpacing(30),
-          Text(
-            "If you have any issues of need help with your account please contact us via the following channels.",
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Greetings ${user.username}!",
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
+                verticalSpacing(20),
+                Text(
+                  "If you have any issues of need help with your account please contact us via the following channels.",
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
           ),
           verticalSpacing(20),
-           SupportTile(title: "Email", value: "support@truvender.com", onTap: () => _launchUrl('mail:support@truvender.com')),
+          SupportTile(title: "Email", value: "support@truvender.com", onTap: () => _launchUrl('mailto:support@truvender.com')),
         ],
       ),
     );
@@ -68,14 +100,10 @@ class SupportTile extends StatelessWidget {
 
 
     return InkWell(
-      onTap: () {},
+      onTap: () => onTap(),
       child: Container(
         height: 86,
         padding: const EdgeInsets.only(left: 20),
-        decoration: const BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: AppColors.textFaded, width: 0.2)),
-        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,6 +136,7 @@ class SupportTile extends StatelessWidget {
             Expanded(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   title,
@@ -116,7 +145,7 @@ class SupportTile extends StatelessWidget {
                       letterSpacing: 0.2,
                       wordSpacing: 1.5,
                       fontSize: 14.8,
-                      fontWeight: FontWeight.w900),
+                      fontWeight: FontWeight.w900,),
                 ),
                 verticalSpacing(8),
                 Text(
@@ -126,7 +155,7 @@ class SupportTile extends StatelessWidget {
                       letterSpacing: 0.2,
                       wordSpacing: 1.5,
                       fontSize: 14.8,
-                      fontWeight: FontWeight.w900),
+                      fontWeight: FontWeight.w900,),
                 ),
               ],
             ))

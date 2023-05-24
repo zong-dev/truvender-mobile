@@ -13,10 +13,14 @@ class SignupFormSubmitted extends RegisterEvent {
   final String password;
   final String referrer;
   final String phone;
+  final String? country;
+  final String? currency;
 
   const SignupFormSubmitted(
       {required this.username,
       required this.email,
+      this.currency,
+      this.country,
       required this.password,
       this.referrer = '',
       required this.phone});
@@ -26,7 +30,7 @@ class SignupFormSubmitted extends RegisterEvent {
 
   @override
   String toString() {
-    return 'SignupSubmitted { username: $username, password: $password, email: $email, phone: $phone, referrer: $referrer }';
+    return 'SignupSubmitted { username: $username, password: $password, email: $email, phone: $phone, referrer: $referrer, country: $country, currency: $currency }';
   }
 }
 

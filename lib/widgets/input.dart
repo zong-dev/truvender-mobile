@@ -1,4 +1,3 @@
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:truvender/theme.dart';
@@ -98,63 +97,79 @@ class TextInput extends StatelessWidget {
   }
 }
 
-class PhoneInput extends StatelessWidget {
+class PhoneInput extends StatefulWidget {
   const PhoneInput(
       {Key? key,
       required this.controller,
       this.bordered = true,
+      this.onChange,
+      this.require = true,
       this.label = 'Phone number',
       this.padding = const EdgeInsets.symmetric(horizontal: 10)})
       : super(key: key);
   final TextEditingController controller;
   final bool bordered;
+  final bool require;
   final String? label;
+  final Function? onChange;
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-          border: Border.all(
-            width: bordered ? 1.4 : 0,
-            color: AppColors.textFaded,
-          ),
-          color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.all(Radius.circular(16))),
-      child: InternationalPhoneNumberInput(
-        textFieldController: controller,
-        onInputChanged: (PhoneNumber number) {
-          if (kDebugMode) {
-            print(number.phoneNumber);
-          }
-        },
-        onInputValidated: (bool value) {
-          if (kDebugMode) {
-            print(value);
-          }
-        },
-        hintText: label,
-        textStyle: TextStyle(
-          color: controller.text.isEmpty
-              ? AppColors.textFaded
-              : AppColors.textDark,
-          backgroundColor: Theme.of(context).cardColor,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-        ),
+  State<PhoneInput> createState() => _PhoneInputState();
+}
 
-        ignoreBlank: true,
-        autoValidateMode: AutovalidateMode.disabled,
-        initialValue: PhoneNumber(isoCode: 'NG'),
-        // textFieldController: controller,
-        inputBorder: const OutlineInputBorder(
-          borderSide: BorderSide.none,
+class _PhoneInputState extends State<PhoneInput> {
+  bool isValid = true;
+  String selectedCountry = 'NG';
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: widget.padding,
+          decoration: BoxDecoration(
+              border: Border.all(
+                width: widget.bordered ? 1.4 : 0,
+                color: !isValid ? const Color.fromARGB(150, 247, 97, 117) : AppColors.textFaded,
+              ),
+              color: Theme.of(context).cardColor,
+              borderRadius: const BorderRadius.all(Radius.circular(16))),
+          child: InternationalPhoneNumberInput(
+            onInputChanged: (PhoneNumber number) {
+              setState(() => selectedCountry = number.isoCode ?? 'NG');
+              widget.onChange!(number.isoCode);
+            },
+            onInputValidated: (bool value) =>  setState(() => isValid = value),
+            ignoreBlank: true,
+            countries: const ['NG', 'GH', 'ZA', 'KE', 'CM'],
+            autoValidateMode: AutovalidateMode.disabled,
+            initialValue: PhoneNumber(isoCode: selectedCountry),
+            textFieldController: widget.controller,
+            inputBorder: const OutlineInputBorder(
+              borderSide: BorderSide.none,
+            ),
+            selectorConfig: const SelectorConfig(
+              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+            ),
+            inputDecoration: const InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
         ),
-        selectorConfig: const SelectorConfig(
-          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-        ),
-      ),
+        !isValid && widget.require ? Padding(padding: const EdgeInsets.only(top: 6), child: Text("${widget.label!} is invalid", style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: AppColors.redLight,
+          fontSize: 10,
+        ),),) : const SizedBox(),
+      ],
     );
   }
 }

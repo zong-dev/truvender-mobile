@@ -8,6 +8,7 @@ export 'spacing.dart';
 export 'notifier.dart';
 export 'network.dart';
 export 'widget.dart';
+export 'socket.dart';
 export 'custom_validators.dart';
 
 List actions = [

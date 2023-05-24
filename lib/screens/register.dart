@@ -1,8 +1,11 @@
+import 'package:country_currency_pickers/country.dart';
+import 'package:country_currency_pickers/country_pickers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
+import 'package:truvender/blocs/login/login_bloc.dart';
 import 'package:truvender/blocs/register/register_bloc.dart';
 import 'package:truvender/data/repositories/auth.dart';
 import 'package:truvender/utils/notifier.dart';
@@ -74,13 +77,24 @@ class _SignupFormState extends State<SignupForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _referrerController = TextEditingController();
 
+  Map countryData = { "country": "NG", "currency": "NGN"};
+
   _submitSignUpForm() async {
     BlocProvider.of<RegisterBloc>(context).add(SignupFormSubmitted(
       username: _usernameController.text,
       email: _emailController.text,
       password: _passwordController.text,
-      phone: _phoneController.text,
+      phone: _phoneController.text.trim(),
+      country: countryData['country'],
+      currency: countryData['currency'],
     ));
+  }
+
+  _getCountryFromIso(String isoCode){
+     Country country = CountryPickerUtils.getCountryByIsoCode(isoCode);
+     setState(() {
+       countryData = { "country": country.isoCode, "currency": country.currencyCode };
+     });
   }
 
   @override
@@ -93,8 +107,9 @@ class _SignupFormState extends State<SignupForm> {
           setState(() {
             processing = false;
           });
-          notify(context, 'Account created successfully!', 'success');
-          context.goNamed('verification', queryParams: state.verifiableRecord);
+          notify(context, 'Account creation successful', 'success');
+          // Redirect After Signup
+          BlocProvider.of<AppBloc>(context).add(SignOut());
         } else if (state is RegisterLoading) {
           setState(() {
             processing = true;
@@ -146,10 +161,11 @@ class _SignupFormState extends State<SignupForm> {
                 PhoneInput(
                   controller: _phoneController,
                   bordered: true,
+                  onChange: (String isoCode) => _getCountryFromIso(isoCode)
                 ),
                 verticalSpacing(20),
                 TextInput(
-                  label: 'Referrer Username',
+                  label: 'Referrer Username (optional)',
                   type: TextInputType.text,
                   controller: _referrerController,
                   bordered: true,
@@ -164,7 +180,7 @@ class _SignupFormState extends State<SignupForm> {
                 ),
                 verticalSpacing(20),
                 TextInput(
-                  label: 'Password',
+                  label: 'Password *',
                   type: TextInputType.text,
                   obsecureText: passwordInvisible,
                   controller: _passwordController,

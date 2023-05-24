@@ -12,7 +12,7 @@ import 'package:truvender/data/repositories/auth.dart';
 import 'package:truvender/services/services.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/configs/router.dart';
-
+import 'package:truvender/utils/utils.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -58,7 +58,6 @@ class _TruvenderState extends State<Truvender> {
     super.initState();
     dio = Dio();
     // dio.interceptors.add(
-  
     //   RetryOnConnectionChangeIterceptor(
     //     requestRetrier: DioConnectivityRequestRetrier(
     //       connectivity: Connectivity(),
@@ -90,16 +89,25 @@ class _TruvenderState extends State<Truvender> {
         return AppBloc(
             authRepository: authRepository,
             dio: dio,
-            localNotificationService: notificationService)
-          ;
+            localNotificationService: notificationService);
       },
-      child: BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) => MaterialApp.router(
-          title: 'Truvender',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(),
-          darkTheme: AppTheme.dark(),
-          routerConfig: AppRouter(BlocProvider.of<AppBloc>(context)).router,
+      child: BlocListener<AppBloc, AppState>(
+        listener: (context, state) {
+          if(state is Authenticated){
+            var socketClient = BlocProvider.of<AppBloc>(context).socket;
+            socketHandler(socketClient, context);
+          } else if(state is TransactionInitiated){
+            print("Hello Need token to continue");
+          }
+        },
+        child: BlocBuilder<AppBloc, AppState>(
+          builder: (context, state) => MaterialApp.router(
+            title: 'Truvender',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            routerConfig: AppRouter(BlocProvider.of<AppBloc>(context)).router,
+          ),
         ),
       ),
     );

@@ -4,10 +4,12 @@ import 'package:truvender/utils/utils.dart';
 class Trade extends Equatable {
   final String id;
   final double amount;
+  final double localAmount;
   final String type;
   final String assetType;
   final String itemName;
   final double rate;
+  final double localRate;
   final String status;
   final Map? metadata;
   final String createdAt;
@@ -20,7 +22,9 @@ class Trade extends Equatable {
     required this.assetType,
     required this.itemName,
     required this.rate,
+    required this.localRate,
     required this.status,
+    required this.localAmount,
     this.metadata,
     this.currency = "NGN",
     required this.createdAt,
@@ -38,15 +42,17 @@ class Trade extends Equatable {
         id: json['_id'],
         amount: double.parse(json['amount'].toString()),
         type: json['type'],
+        localAmount: json['localAmount'],
         assetType: json['assetType'],
         itemName: json['itemName'],
         rate: double.parse(json['rate'].toString()),
+        localRate: double.parse(json['localRate'].toString()),
         status: json['status'],
         currency: json['currency'],
         createdAt: json['createdAt']);
   }
 
-  get formatedAmount => "$currency ${moneyFormat(amount)}";
-  get formatedRate => "$currency ${moneyFormat(rate)}";
+  get formatedAmount => "$currency ${moneyFormat(localAmount)}";
+  get formatedRate => "$currency ${moneyFormat(localRate)}";
   get date => formatDate(createdAt);
 }

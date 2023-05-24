@@ -38,21 +38,12 @@ class AppRouter {
         return '/splash';
       } else if (blocstate is Loading) {
         return '/loading';
-      } else if (blocstate is Authenticated &&
-          (blocstate.user.email_verified_at == null ||
-              blocstate.user.phone_verified_at == null)) {
+      } else if (blocstate is AccountVerification && location != '/verification') {
         return '/verification';
       } else if (blocstate is OtpChallenge && location != '/otp-challenge') {
         return '/otp-challenge';
-      // } else if (blocstate is Authenticated && (appBloc.authenticatedUser.kycStatus == null ||
-      //     appBloc.authenticatedUser.kycStatus == 'Tier1')) {
-      //   User user = appBloc.authenticatedUser;
-      //   if (user.kycStatus == null && user.country.toUpperCase() == "NG") {
-      //     return "/kyc";
-      //   } else if (user.kycStatus == 'Tier1' &&
-      //       user.country.toUpperCase() != 'NG') {
-      //     return '/kyc/id';
-      //   }
+      } else if (blocstate is KycVerification && location != blocstate.path) {
+          return blocstate.path;
       } else {}
     },
     routes: <GoRoute>[
@@ -67,7 +58,9 @@ class AppRouter {
         name: 'dashboard',
         builder: (BuildContext context, GoRouterState state) {
           String index = state.queryParams['index'] ?? '0';
-          return  DashboardScreen(index: int.parse(index),);
+          return DashboardScreen(
+            index: int.parse(index),
+          );
         },
       ),
       GoRoute(
@@ -127,22 +120,23 @@ class AppRouter {
        * ========================== Account Verification =======================
        */
       GoRoute(
-          path: '/verification',
-          name: 'verification',
-          builder: (BuildContext context, GoRouterState state) {
-            var authenticatedUser =
-                BlocProvider.of<AppBloc>(context).authenticatedUser;
-            String verifyType = "email";
-            if (authenticatedUser.phone_verified_at == null &&
-                authenticatedUser.email_verified_at != null) {
-              verifyType = "phone";
-            }
-            return VerificationScreen(
-              vType: verifyType,
-              email: authenticatedUser.email,
-              phone: authenticatedUser.phone,
-            );
-          }),
+        path: '/verification',
+        name: 'verification',
+        builder: (BuildContext context, GoRouterState state) {
+          var authenticatedUser =
+              BlocProvider.of<AppBloc>(context).authenticatedUser;
+          String verifyType = "email";
+          if (authenticatedUser.phone_verified_at == null &&
+              authenticatedUser.email_verified_at != null) {
+            verifyType = "phone";
+          }
+          return VerificationScreen(
+            vType: verifyType,
+            email: authenticatedUser.email,
+            phone: authenticatedUser.phone,
+          );
+        },
+      ),
 
       /**
        * 
@@ -161,7 +155,7 @@ class AppRouter {
           GoRoute(
             path: 'id',
             builder: (BuildContext context, GoRouterState state) {
-              String? comment = state.queryParams['for']; 
+              String? comment = state.queryParams['for'];
               return BlocProvider<KycCubit>(
                 create: (context) =>
                     KycCubit(appBloc: BlocProvider.of<AppBloc>(context)),
@@ -265,7 +259,6 @@ class AppRouter {
           );
         },
       ),
-
       GoRoute(
         path: '/asset',
         name: 'asset',
@@ -275,22 +268,29 @@ class AppRouter {
           buildChildView() {
             if (type != null && type == 'giftcard') {
               Giftcard? card = state.extra as Giftcard;
-              return TradeGiftcardPage(card: card,);
+              return TradeGiftcardPage(
+                card: card,
+              );
             } else if (type != null && type == 'crypto') {
               Crypto? crypto = state.extra as Crypto;
               return CryptoTradePage(asset: crypto);
             } else if (type != null && type == 'spending-card') {
               Spending? card = state.extra as Spending;
-              return SpendingCardTradePage(card: card,);
+              return SpendingCardTradePage(
+                card: card,
+              );
             } else {
               Fundz? asset = state.extra as Fundz;
               return FundTradePage(asset: asset);
             }
           }
+
           AppBloc appBloc = BlocProvider.of<AppBloc>(context);
           return MultiBlocProvider(providers: [
-            BlocProvider<TradeCubit>(create: (context) => TradeCubit(appBloc: appBloc)),
-            BlocProvider<AssetCubit>(create: (context) => AssetCubit(appBloc: appBloc)),
+            BlocProvider<TradeCubit>(
+                create: (context) => TradeCubit(appBloc: appBloc)),
+            BlocProvider<AssetCubit>(
+                create: (context) => AssetCubit(appBloc: appBloc)),
           ], child: buildChildView());
         },
       ),

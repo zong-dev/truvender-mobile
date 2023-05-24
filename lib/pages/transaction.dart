@@ -28,6 +28,12 @@ class TransactionPage extends StatelessWidget {
       forground = Colors.amber.shade700;
     }
 
+    generateReceipt() async {
+      Map data = {
+        
+      };
+    }
+
     return Wrapper(
       title: "Transaction Info",
       child: Padding(
@@ -75,7 +81,7 @@ class TransactionPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Funding",
+                            ucFirst(transaction.type),
                             style:
                                 Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       color: Theme.of(context).accentColor,
@@ -184,7 +190,7 @@ class TransactionPage extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Button.primary(
-                    onPressed: () {},
+                    onPressed: () => generateReceipt(),
                     title: "Share Reciept",
                     background: AppColors.primary,
                     foreground: AppColors.secoundaryLight,
