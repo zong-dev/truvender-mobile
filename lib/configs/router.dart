@@ -21,7 +21,7 @@ class AppRouter {
   AppRouter(this.appBloc);
 
   late final GoRouter router = GoRouter(
-    // errorBuilder: (context, state) => const ErrorScreen(),
+    errorBuilder: (context, state) => const ErrorScreen(),
     refreshListenable: GoRouterRefreshStream(appBloc.stream),
     redirect: (BuildContext context, GoRouterState state) async {
       final blocstate = context.read<AppBloc>().state;

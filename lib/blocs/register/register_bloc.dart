@@ -24,8 +24,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       await authRepository.resendVerificationToken(event.type);
       emit(ResentVerificationCode());
     } catch (e) {
-      String message = e.toString();
-      emit(VerificationFailed(message: message));
+      // String message = e.toString();
+      emit(const VerificationFailed(message: "Connection Error"));
     }
   }
 
@@ -39,7 +39,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         emit(PhoneVerified());
       }
     } catch (e) {
-      emit(VerificationFailed(message: e.toString()));
+      emit(const VerificationFailed(message: "Connection Error"));
     }
   }
 
@@ -58,7 +58,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         if (recordValidation.email == false &&
             recordValidation.phone == true &&
             recordValidation.username == true) {
-          var request = await authRepository.signUp(
+          await authRepository.signUp(
               email: event.email,
               phone: event.phone,
               username: event.username,
@@ -85,8 +85,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         }
       }
     } catch (e) {
-      String message = e.toString();
-      emit(RegistrationFailed(message: message));
+      // String message = e.toString();
+      emit( const RegistrationFailed(message: "Connection Error"));
     }
   }
 }

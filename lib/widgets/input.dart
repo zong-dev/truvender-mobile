@@ -144,6 +144,7 @@ class _PhoneInputState extends State<PhoneInput> {
             ignoreBlank: true,
             countries: const ['NG', 'GH', 'ZA', 'KE', 'CM'],
             autoValidateMode: AutovalidateMode.disabled,
+            cursorColor: Theme.of(context).accentColor,
             initialValue: PhoneNumber(isoCode: selectedCountry),
             textFieldController: widget.controller,
             inputBorder: const OutlineInputBorder(

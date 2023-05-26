@@ -78,6 +78,7 @@ class _SignupFormState extends State<SignupForm> {
   final TextEditingController _referrerController = TextEditingController();
 
   Map countryData = { "country": "NG", "currency": "NGN"};
+  bool isValidPhoneNumber = false;
 
   _submitSignUpForm() async {
     BlocProvider.of<RegisterBloc>(context).add(SignupFormSubmitted(
@@ -103,6 +104,9 @@ class _SignupFormState extends State<SignupForm> {
       listener: (context, state) {
         if (state is RegistrationFailed) {
           notify(context, state.message, 'error');
+          setState(() {
+            processing = false;
+          });
         } else if (state is RegisterSuccess) {
           setState(() {
             processing = false;
