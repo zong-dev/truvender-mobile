@@ -10,6 +10,7 @@ import 'package:truvender/data/repositories/auth.dart';
 import 'package:truvender/services/services.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/utils/spacing.dart';
+import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
@@ -20,9 +21,9 @@ class SigninScreen extends StatelessWidget {
 
   const SigninScreen({Key? key, required this.authRepository})
       : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+  
     return BlocProvider<LoginBloc>(
       create: (context) {
         return LoginBloc(
@@ -41,7 +42,7 @@ class SigninScreen extends StatelessWidget {
                 children: [
                   AuthHeader(
                     description: 'Sign in to your account to continue.',
-                    actionText: 'Welcome Back !',
+                    actionText: 'Welcome Back!',
                   ),
                   const SigninForm(),
                 ],
@@ -121,12 +122,13 @@ class _SigninFormState extends State<SigninForm> {
   void biometricsAlertHandler(String token) async {
     var alertOpen = await localStore.getBoolVal('openedBiometricsAlert');
     if (!alertOpen || alertOpen == null) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return BiometricsDialog(token: token, email: _usernameController.text, password: _passwordController.text);
-        },
+      openModal(
+        context: context, 
+        child: BiometricsDialog(
+          token: token,
+          email: _usernameController.text,
+          password: _passwordController.text
+        )
       );
     }else {
       BlocProvider.of<AppBloc>(context).add(SignedIn(token: token));

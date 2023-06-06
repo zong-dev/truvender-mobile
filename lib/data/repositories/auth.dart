@@ -1,11 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRepository {
-  static String? baseUrl = "http://192.168.0.148:6080/v1";
-  static String endpoint = '$baseUrl';
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   final Dio dioInstance;
@@ -29,7 +26,7 @@ class AuthRepository {
 
   Future signIn(String username, String password) async {
     try {
-      var response = await dioInstance.post("$endpoint/auth/signin",
+      var response = await dioInstance.post("/auth/signin",
           data: {"username": username, "password": password});
       return response;
     } catch (err, stacktrace) {
@@ -46,7 +43,7 @@ class AuthRepository {
       required String username}) async {
     try {
       Response response =
-          await dioInstance.post("$endpoint/auth/active-record", data: {
+          await dioInstance.post("/auth/active-record", data: {
         'records': {
           'email': email,
           'phone': phone,
@@ -73,7 +70,7 @@ class AuthRepository {
   }) async {
     try {
       Response response =
-          await dioInstance.post("$endpoint/auth/signin", data: {
+          await dioInstance.post("/auth/signin", data: {
         "username": username,
         "password": password,
         "email": email,
@@ -95,7 +92,7 @@ class AuthRepository {
     try {
       var options = await _getRequestOptions();
       var response = await dioInstance.get(
-        "$endpoint/account",
+        "/account",
         options:options,
       );
       return response;
@@ -111,7 +108,7 @@ class AuthRepository {
   resendVerificationToken(String type) async {
     var options = await _getRequestOptions();
     Response response = await dioInstance.post(
-      "$endpoint/auth/resend-token/$type",
+      "/auth/resend-token/$type",
       data: {},
       options: options,
     );
@@ -121,7 +118,7 @@ class AuthRepository {
   verifyAccount(String vType, String token) async {
     var options = await _getRequestOptions();
     Response response = await dioInstance.post(
-      "$endpoint/auth/verify-account",
+      "/auth/verify-account",
       data: {"token": token, "type": vType},
       options:options,
     );
@@ -132,7 +129,7 @@ class AuthRepository {
   forgotPassword(String email) async {
     try {
       Response response = await dioInstance.post(
-        "$endpoint/auth/password/send-instruction",
+        "/auth/password/send-instruction",
         data: {"email": email},
       );
       return response;
@@ -150,7 +147,7 @@ class AuthRepository {
       required String password}) async {
     try {
       Response response = await dioInstance.post(
-        "$endpoint/auth/password/reset",
+        "/auth/password/reset",
         data: {"email": email, 'token': token, "password": password},
       );
       return response.data;
@@ -167,7 +164,7 @@ class AuthRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-        "$endpoint/auth/verification-challenge",
+        "/auth/verification-challenge",
         data: {"type": type, 'value': val},
         options:options,
       );
@@ -185,7 +182,7 @@ class AuthRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-        "$endpoint/auth/otp-challenge",
+        "/auth/otp-challenge",
         data: {"token": token},
         options: options,
       );
@@ -202,7 +199,7 @@ class AuthRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-        "$endpoint/auth/send-otp",
+        "/auth/send-otp",
         data: {},
         options: options,
       );
@@ -218,5 +215,21 @@ class AuthRepository {
    Future<Options> _getRequestOptions() async {
     final authToken = await storage.read(key: 'tru-token');
     return Options(headers: {"authorization": "Bearer $authToken"});
+  }
+
+  Future validateOwner({required String type, required String value}) async {
+    try {
+      Map requestData = {"type": type, "value": value};
+      var options = await _getRequestOptions();
+      Response response = await dioInstance.post("/auth/verification-challenge",
+          data: requestData, options: options);
+      return response;
+    } catch (err, stacktrace) {
+      if (kDebugMode) {
+        print(err);
+        print("Exception occured: $err stackTrace: $stacktrace");
+      }
+      throw Exception(err);
+    }
   }
 }

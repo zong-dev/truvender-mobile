@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "truvender" "\0"
+            VALUE "FileDescription", "Truvender" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "truvender" "\0"
+            VALUE "InternalName", "Truvender" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "truvender.exe" "\0"
-            VALUE "ProductName", "truvender" "\0"
+            VALUE "ProductName", "Truvender" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -38,11 +38,16 @@ class SimpleBlocObserver extends BlocObserver {
 void main() async {
   Bloc.observer = SimpleBlocObserver();
   await dotenv.load(fileName: ".env");
-  runApp(const Truvender());
+  String baseUri = "http://192.168.1.148:6080/v1";
+  runApp(Truvender(baseUri: baseUri));
 }
 
 class Truvender extends StatefulWidget {
-  const Truvender({Key? key}) : super(key: key);
+  final String baseUri;
+  const Truvender({
+    Key? key,
+    required this.baseUri,
+  }) : super(key: key);
 
   @override
   _TruvenderState createState() => _TruvenderState();
@@ -53,10 +58,26 @@ class _TruvenderState extends State<Truvender> {
   late Dio dio;
   final LocalNotification notificationService = LocalNotification();
 
+  // ignore: prefer_typing_uninitialized_variables
+  static var baseUrl;
+  
+  initializeDio() {
+    BaseOptions dioOptions = BaseOptions(
+        baseUrl: baseUrl,
+        receiveDataWhenStatusError: true,
+        connectTimeout: const Duration(seconds: 60 * 1000), // 60 seconds
+        receiveTimeout: const Duration(seconds: 60 * 1000) // 60 seconds
+    );
+    setState(() => dio = Dio(dioOptions));
+  }
+
   @override
   void initState() {
     super.initState();
-    dio = Dio();
+    setState(() => baseUrl = widget.baseUri);
+    initializeDio();
+    notificationService.initialize();
+    _listenToNotification();
     // dio.interceptors.add(
     //   RetryOnConnectionChangeIterceptor(
     //     requestRetrier: DioConnectivityRequestRetrier(
@@ -65,8 +86,6 @@ class _TruvenderState extends State<Truvender> {
     //     ),
     //   ),
     // );
-    notificationService.initialize();
-    _listenToNotification();
     authRepository = AuthRepository(dioInstance: dio);
   }
 
@@ -84,6 +103,7 @@ class _TruvenderState extends State<Truvender> {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+
     return BlocProvider<AppBloc>(
       create: (context) {
         return AppBloc(
@@ -96,8 +116,6 @@ class _TruvenderState extends State<Truvender> {
           if(state is Authenticated){
             var socketClient = BlocProvider.of<AppBloc>(context).socket;
             socketHandler(socketClient, context);
-          } else if(state is TransactionInitiated){
-            print("Hello Need token to continue");
           }
         },
         child: BlocBuilder<AppBloc, AppState>(

@@ -9,21 +9,21 @@ part 'asset_state.dart';
 class AssetCubit extends Cubit<AssetState> {
   final AppBloc appBloc;
 
-  AssetCubit({ required this.appBloc}) : super(AssetInitial());
+  AssetCubit({required this.appBloc}) : super(AssetInitial());
 
-  late AssetRepository assetRepository = AssetRepository(dioInstance:  appBloc.dio );
+  late AssetRepository assetRepository =
+      AssetRepository(dioInstance: appBloc.dio);
 
-  Future<void> loadGiftcards({  int page = 1, String? query}) async {
+  Future<void> loadGiftcards({int page = 1, String? query}) async {
     emit(AssetLoading());
     try {
-      var giftcards = await assetRepository.getGiftcards(page: page, query: query ?? '');
-      if(giftcards.status == 200){
-        var data = giftcards.data;
-        var records = data['docs'].map((card) => Giftcard.fromJson(card)).toList();
-        data['docs'] = records;
-        emit(AssetLoaded(data: data));
-      }
-      emit(AssetInitial());
+      var giftcards =
+          await assetRepository.getGiftcards(page: page, query: query ?? '');
+      var data = giftcards.data;
+      var records =
+          data['docs'].map((card) => Giftcard.fromJson(card)).toList();
+      data['docs'] = records;
+      emit(AssetLoaded(data: data));
     } catch (e) {
       emit(AssetLoadingFialed(error: e));
     }
@@ -32,9 +32,8 @@ class AssetCubit extends Cubit<AssetState> {
   Future<void> loadCrypos({String? id}) async {
     emit(AssetLoading());
     try {
-      var cryptos =
-          await assetRepository.getCryptoAssets(id);
-      if(cryptos.status == 200){
+      var cryptos = await assetRepository.getCryptoAssets(id);
+      if (cryptos.status == 200) {
         var records = cryptos.data.map((crypto) => Crypto.fromJson(crypto));
         emit(AssetLoaded(data: records));
       }
@@ -50,7 +49,7 @@ class AssetCubit extends Cubit<AssetState> {
       if (id == null) {
         var records = funds.data.map((crypto) => Fundz.fromJson(crypto));
         emit(AssetLoaded(data: records));
-      }else {
+      } else {
         emit(AssetLoaded(data: Fundz.fromJson(funds.data)));
       }
     } catch (e) {
@@ -58,11 +57,11 @@ class AssetCubit extends Cubit<AssetState> {
     }
   }
 
-
   Future<void> loadSpendingCards({String? query, int page = 0}) async {
     emit(AssetLoading());
     try {
-      var spendingCards = await assetRepository.getSpendingCards(query: query?? '', page: page);
+      var spendingCards = await assetRepository.getSpendingCards(
+          query: query ?? '', page: page);
       if (spendingCards.status == 200) {
         var data = spendingCards.data;
         var records = data['docs'].map((crypto) => Spending.fromJson(crypto));
@@ -78,12 +77,12 @@ class AssetCubit extends Cubit<AssetState> {
   Future<void> fetchCard({required String id, String? type}) async {
     emit(AssetLoading());
     try {
-      var card = await assetRepository.getCardData(id: id, type: type??'');
-      if(card.status == 200){
+      var card = await assetRepository.getCardData(id: id, type: type ?? '');
+      if (card.status == 200) {
         dynamic record;
-        if(type == 'spending'){
+        if (type == 'spending') {
           record = Spending.fromJson(card.data);
-        }else {
+        } else {
           var giftcard = Giftcard.fromJson(card.data['giftcard']);
           record = {
             "card": giftcard,

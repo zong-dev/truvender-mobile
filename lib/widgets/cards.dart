@@ -54,7 +54,7 @@ class _HomeCardState extends State<HomeCard> {
       width: MediaQuery.of(context).size.width * 0.9,
       decoration: BoxDecoration(
         image: const DecorationImage(
-            image: AssetImage('assets/images/wallet_pattern.png'),
+            image: AssetImage('assets/images/card.png'),
             fit: BoxFit.cover),
         borderRadius: BorderRadius.circular(18),
         // color: Theme.of(context).colorScheme.primary.withGreen(45),
@@ -192,7 +192,7 @@ class _WalletCardState extends State<WalletCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: const DecorationImage(
-            image: AssetImage('assets/images/wallet_pattern.png'),
+            image: AssetImage('assets/images/card.png'),
             fit: BoxFit.cover),
       ),
       child: Stack(
@@ -481,14 +481,18 @@ class _AccountHeaderState extends State<AccountHeader> {
                 ),
               ],
             ),
-            GestureDetector(
-              onTap: () => context.push('/notification'),
-              child: const CircleAvatar(
-                backgroundColor: AppColors.secoundaryLight,
-                child: Icon(CupertinoIcons.bell_fill,
-                    size: 22, color: Color.fromARGB(255, 44, 7, 156)),
+            InkWell(
+              onTap: () => context.pushNamed("support"),
+              child: CircleAvatar(
+                backgroundColor: AppColors.backgroundLight,
+                child: Icon(
+                  Icons.headset_mic_rounded,
+                  size: 22,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            )
+            ),
+            
           ],
         ),
       ),

@@ -17,6 +17,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final StorageUtil storage = StorageUtil();
   static String? baseUrl = dotenv.get('SOCKET_URL');
   late IO.Socket socket;
+  late String validationType;
+  late Function onValidated;
 
   final Dio dio;
   User authenticatedUser = User(id: '');
@@ -31,6 +33,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<SignedIn>(_onSignedIn);
     on<SignOut>(_onSignOut);
     on<UserChanged>(_onUserChanged);
+    on<VerifyAccountOwner>(_verifyAccountOwner);
     // on<Initializedizing>();
   }
 
@@ -54,10 +57,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     var userRequest = await authRepository.getUser();
     if (userRequest.statusCode == 200) {
       //Connecting to socket
-      socket = IO.io(baseUrl, {
-        "auth": {"token": event.token}
-      });
+      // socket = IO.io(baseUrl, {
+      //   "auth": {"token": event.token}
+      // });
       User user = User.fromJson(userRequest.data['user']);
+      print("${userRequest.data}");
       authenticatedUser = user;
       // emit(Authenticated(user: user));
       _validateUserState(user, emit, false);
@@ -98,6 +102,19 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       }
     }else{
       emit(Authenticated(user: user, refreshed: refreshed));
+    }
+  }
+
+  _verifyAccountOwner(event, emit) async {
+    emit(Authenticating());
+    try {
+      await authRepository.validateOwner(
+        type: event.type,
+        value: event.value,
+      );
+      emit(AccountVerified());
+    } catch (e) {
+      emit(ValidationFailed());
     }
   }
 }

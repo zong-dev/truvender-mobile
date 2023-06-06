@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
-import 'package:truvender/blocs/login/login_bloc.dart';
 import 'package:truvender/blocs/register/register_bloc.dart';
 import 'package:truvender/data/repositories/auth.dart';
 import 'package:truvender/utils/notifier.dart';
@@ -167,21 +166,21 @@ class _SignupFormState extends State<SignupForm> {
                   bordered: true,
                   onChange: (String isoCode) => _getCountryFromIso(isoCode)
                 ),
-                verticalSpacing(20),
-                TextInput(
-                  label: 'Referrer Username (optional)',
-                  type: TextInputType.text,
-                  controller: _referrerController,
-                  bordered: true,
-                  rules: MultiValidator(
-                    [
-                      MaxLengthValidator(
-                        100,
-                        errorText: "Username must be below 100 characters long",
-                      ),
-                    ],
-                  ),
-                ),
+                // verticalSpacing(20),
+                // TextInput(
+                //   label: 'Referrer Username (optional)',
+                //   type: TextInputType.text,
+                //   controller: _referrerController,
+                //   bordered: true,
+                //   rules: MultiValidator(
+                //     [
+                //       MaxLengthValidator(
+                //         100,
+                //         errorText: "Username must be below 100 characters long",
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 verticalSpacing(20),
                 TextInput(
                   label: 'Password *',

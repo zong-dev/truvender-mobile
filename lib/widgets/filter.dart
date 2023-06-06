@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:truvender/theme.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
@@ -22,6 +25,8 @@ class FilterWidget extends StatefulWidget {
 class _FilterWidgetState extends State<FilterWidget> {
   int selectedCategory = 0;
   int? selectedDuration = 0;
+  final TextEditingController _dateController = TextEditingController();
+
   Map<String, dynamic> selector = {
     "dateFrom": "",
     "dateTo": "",
@@ -34,33 +39,12 @@ class _FilterWidgetState extends State<FilterWidget> {
 
   @override
   Widget build(BuildContext context) {
-    onCategoryChecked(value) {
-      setState(() {
-        selector['filterBy'] = value;
-      });
-      widget.onChange(selector);
-    }
-
-    Widget buildCheckbox(String text, int index, dynamic value, String type) {
-      return CheckCard(
-        label: text,
-        value: value,
-        checked: (selectedCategory == index) ? true : false,
-        onChecked: () {
-          setState(() {
-            if (type == 'category') {
-              selector['filterBy'] = value;
-              selectedCategory = index;
-            } else {
-              selectedDuration = index;
-              selector['dateFrom'] = DateTime.now()
-                  .subtract(Duration(days: 30 * durations[index]));
-              selector['dateTo'] = DateTime.now();
-            }
-          });
-        },
-      );
-    }
+    // onCategoryChecked(value) {
+    //   setState(() {
+    //     selector['filterBy'] = value;
+    //   });
+    //   widget.onChange(selector);
+    // }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -89,8 +73,39 @@ class _FilterWidgetState extends State<FilterWidget> {
             childAspectRatio: 4,
           ),
           itemBuilder: (context, index) {
-            return buildCheckbox(categories[index].toLowerCase(), index,
-                categories[index], 'category');
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selector['filterBy'] = categories[index].toLowerCase();
+                  selectedCategory = index;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.only(
+                  right: 12,
+                ),
+                alignment: Alignment.center,
+                width: 130,
+                height: 54,
+                padding: const EdgeInsets.only(right: 8, left: 8),
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selectedCategory == index
+                          ? AppColors.secoundaryLight
+                          : Theme.of(context).accentColor.withOpacity(.6),
+                      width: 2,
+                    )),
+                child: Text(
+                  ucFirst(categories[index].toLowerCase()),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+            );
           },
         ),
         verticalSpacing(22),
@@ -117,8 +132,41 @@ class _FilterWidgetState extends State<FilterWidget> {
             childAspectRatio: 4,
           ),
           itemBuilder: (context, index) {
-            return buildCheckbox("${durations[index]} Month", index,
-                durations[index], 'duration');
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedDuration = index;
+                  selector['dateFrom'] = DateTime.now()
+                      .subtract(Duration(days: 30 * durations[index]));
+                  selector['dateTo'] = DateTime.now();
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.only(
+                  right: 12,
+                ),
+                alignment: Alignment.center,
+                width: 130,
+                height: 54,
+                padding: const EdgeInsets.only(right: 8, left: 8),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selectedDuration == index
+                          ? AppColors.secoundaryLight
+                          : Theme.of(context).accentColor.withOpacity(.6),
+                      width: 2,
+                    ),
+                    color: Colors.transparent),
+                child: Text(
+                  "${durations[index]} Month",
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+            );
           },
         ),
         verticalSpacing(22),
@@ -140,43 +188,74 @@ class _FilterWidgetState extends State<FilterWidget> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    "Start Date",
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).accentColor.withOpacity(.8),
-                        ),
-                  )
+                  DatePicker(
+                    label: 'Custom Date',
+                    type: 'range',
+                    controller: _dateController,
+                    onChange: (values) {
+                      selector['dateFrom'] = values[0];
+                      selector['dateTo'] =
+                          values[1] ?? DateFormat.yMd().format(DateTime.now());
+                    },
+                  ),
                 ],
               ),
             ),
-            horizontalSpacing(16),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "Start Date",
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).accentColor.withOpacity(.8),
-                        ),
-                  )
-                ],
-              ),
-            )
           ],
         ),
         verticalSpacing(38),
         Button.primary(
-          onPressed: () {},
+          onPressed: () {
+            widget.onChange(selector);
+            context.pop();
+          },
           title: "Submit",
           foreground: Colors.white,
           background: Theme.of(context).colorScheme.primary.withGreen(38),
         ),
       ],
+    );
+  }
+}
+
+class CheckCard extends StatefulWidget {
+  final Function onChecked;
+  final String label;
+  final dynamic value;
+  final bool checked;
+  const CheckCard(
+      {Key? key,
+      required this.onChecked,
+      required this.label,
+      this.value,
+      this.checked = false})
+      : super(key: key);
+
+  @override
+  _CheckCardState createState() => _CheckCardState();
+}
+
+class _CheckCardState extends State<CheckCard> {
+  bool isChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isChecked = widget.checked;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isChecked = isChecked == true ? false : true;
+        });
+        widget.onChecked(widget.value);
+      },
+      child: SizedBox(),
     );
   }
 }

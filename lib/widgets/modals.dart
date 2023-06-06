@@ -108,7 +108,14 @@ class CardValueModal extends StatefulWidget {
   final int? price;
   final Giftcard asset;
   final List values;
-  const CardValueModal({Key? key, required this.onSelect, this.currentAmount = 0, this.price = 0, required this.asset, required this.values}) : super(key: key);
+  const CardValueModal(
+      {Key? key,
+      required this.onSelect,
+      this.currentAmount = 0,
+      this.price = 0,
+      required this.asset,
+      required this.values})
+      : super(key: key);
 
   @override
   _CardValueModalState createState() => _CardValueModalState();
@@ -152,8 +159,7 @@ class _CardValueModalState extends State<CardValueModal> {
                   borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    imageUrl:
-                        widget.asset.image,
+                    imageUrl: widget.asset.image,
                     placeholder: (context, url) => const SizedBox(
                       height: 40,
                       width: 40,
@@ -205,7 +211,7 @@ class _CardValueModalState extends State<CardValueModal> {
                         if (price.toString() != value) {
                           price = int.parse(value);
                           amount = 0;
-                        }else {
+                        } else {
                           amount--;
                         }
                       });
@@ -231,12 +237,16 @@ class _CardValueModalState extends State<CardValueModal> {
                   onTap: () {
                     if (amount < 5) {
                       setState(() {
-                        if(price.toString() != value){
+                        if (price.toString() != value) {
                           price = int.parse(value);
                         }
                         amount++;
                       });
-                    }else{toastMessage(message: "Maximum cards per trade is 5", context: context);}
+                    } else {
+                      toastMessage(
+                          message: "Maximum cards per trade is 5",
+                          context: context);
+                    }
                   },
                   child: Icon(
                     CupertinoIcons.plus_circle,
@@ -276,13 +286,15 @@ class _CardValueModalState extends State<CardValueModal> {
                   keyboardType: TextInputType.number,
                   cursorColor: Theme.of(context).accentColor,
                   decoration: InputDecoration(
-                    label: Text("Other Giftcard Amount", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 14,
-                      color: AppColors.textFaded,
-                      fontWeight: FontWeight.bold
-                    ),),
+                    label: Text(
+                      "Other Giftcard Amount",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 14,
+                          color: AppColors.textFaded,
+                          fontWeight: FontWeight.bold),
+                    ),
                     contentPadding:
-                       const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     floatingLabelBehavior: FloatingLabelBehavior.auto,
                     enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide.none,
@@ -333,7 +345,9 @@ class _CardValueModalState extends State<CardValueModal> {
                     if (amount < 5 && _otherAmountController.text.isNotEmpty) {
                       setState(() => amount++);
                     } else {
-                      toastMessage(message: "Maximum cards per trade is 5", context: context);
+                      toastMessage(
+                          message: "Maximum cards per trade is 5",
+                          context: context);
                     }
                   },
                   child: Icon(
@@ -393,31 +407,34 @@ class _CardValueModalState extends State<CardValueModal> {
   }
 }
 
-
 class StatusModal extends StatelessWidget {
   final String type;
   final String title;
   final String? subTitle;
   Function? next;
-  StatusModal({ Key? key, required this.type, required this.title, this.subTitle, this.next }) : super(key: key);
+  StatusModal(
+      {Key? key,
+      required this.type,
+      required this.title,
+      this.subTitle,
+      this.next})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     pickIcon() {
       String imagePath = "assets/images/info.png";
       if (type == 'success') {
         imagePath = "assets/images/success.png";
-      }else if(type == 'error'){
+      } else if (type == 'error') {
         imagePath = "assets/images/error.png";
       }
       return Image.asset(
-        imagePath, 
+        imagePath,
         height: 100,
         width: 120,
       );
     }
-
 
     return Container(
       height: MediaQuery.of(context).size.height / 3.1,
@@ -427,7 +444,6 @@ class StatusModal extends StatelessWidget {
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
         ),
-        
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -444,12 +460,11 @@ class StatusModal extends StatelessWidget {
           pickIcon(),
           verticalSpacing(20),
           Text(
-            title, 
+            title,
             style: GoogleFonts.montserrat(
-              fontSize:  18,
-              color: Theme.of(context).accentColor,
-              fontWeight: FontWeight.w900
-            ),
+                fontSize: 18,
+                color: Theme.of(context).accentColor,
+                fontWeight: FontWeight.w900),
           ),
           verticalSpacing(12),
           Text(
@@ -461,14 +476,18 @@ class StatusModal extends StatelessWidget {
                 ),
           ),
           verticalSpacing(40),
-          Button.primary(onPressed: () {
-            if(next != null){
-              next!();
-            }else {
-               Navigator.pop(context);
-            }
-          }, background: AppColors.primary, foreground: AppColors.secoundaryLight,title: "Close",),
-
+          Button.primary(
+            onPressed: () {
+              if (next != null) {
+                next!();
+              } else {
+                Navigator.pop(context);
+              }
+            },
+            background: AppColors.primary,
+            foreground: AppColors.secoundaryLight,
+            title: "Close",
+          ),
         ],
       ),
     );

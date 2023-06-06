@@ -1,11 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ExchangeRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl/exchange';
   final Dio dioInstance;
 
   final FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -16,7 +13,7 @@ class ExchangeRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance
-          .post("$endpoint/get-rate", data: {"amount": amount}, options: options);
+          .post("/get-rate", data: {"amount": amount}, options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -30,7 +27,7 @@ class ExchangeRepository {
       {required double amount, required String currency}) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/crypto/value",
+      Response response = await dioInstance.post("/crypto/value",
           data: {"amount": amount, "currency": currency}, options: options);
       return response;
     } catch (err, stacktrace) {

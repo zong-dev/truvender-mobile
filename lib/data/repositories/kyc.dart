@@ -1,11 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class KycRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl/auth';
-
   final Dio dioInstance;
 
   KycRepository({ required this.dioInstance });
@@ -14,7 +10,7 @@ class KycRepository {
 
   tierOneVerification(String value) async {
      var options = await _getRequestOptions();
-    var response = await dioInstance.post("$endpoint/kyc/tier1/submit",
+    var response = await dioInstance.post("/kyc/tier1/submit",
         data: {"value": value},
         options: options);
     return response;
@@ -28,7 +24,7 @@ class KycRepository {
     required String documentUrl
   }) async {
     var options = await _getRequestOptions();
-    var response = await dioInstance.post("$endpoint/kyc/tier2/submit",
+    var response = await dioInstance.post("/kyc/tier2/submit",
         data: {
           "name": name,
           "dateOfBirth": dateOfBirth,

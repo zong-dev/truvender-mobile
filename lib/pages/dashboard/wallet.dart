@@ -52,7 +52,15 @@ class _DashboardWalletPageState extends State<DashboardWalletPage> {
   }
 
   filterTransactions(selector){
-
+    setState(() {
+      loadingTransactions = true;
+      transactionData = {};
+    });
+    BlocProvider.of<ProfileCubit>(context).transactions(
+        walletId: wallet!.id,
+        page: transactionSelector['page'],
+        dateFrom: transactionSelector['dateFrom'],
+        dateTo: transactionSelector['dateTo']);
   }
 
   _loadMoreTransactions(){
@@ -259,6 +267,7 @@ class _DashboardWalletPageState extends State<DashboardWalletPage> {
                             InkWell(
                               onTap: () {
                                 openBottomSheet(
+                                   height: 520,
                                     context: context,
                                     child: FilterWidget(
                                       onChange: (selector) => filterTransactions(selector),

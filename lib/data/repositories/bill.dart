@@ -2,12 +2,9 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class BillRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl';
   final Dio dioInstance;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -16,7 +13,7 @@ class BillRepository {
   Future getVariations() async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.get("$endpoint/bills/variations", options: options);
+      Response response = await dioInstance.get("/bills/variations", options: options);
       return response;
     } catch (err,stacktrace) {
       if (kDebugMode) {
@@ -30,7 +27,7 @@ class BillRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.get("$endpoint/wallet/all/?type=local", options: options);
+          await dioInstance.get("/wallet/all/?type=local", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -48,7 +45,7 @@ class BillRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-          "$endpoint/bills/customer/validations",
+          "/bills/customer/validations",
           data: {"item_code": item_code, "code": code, "customer": customer}, options: options);
       return response;
     } catch (err,stacktrace) {
@@ -70,7 +67,7 @@ class BillRepository {
   }) async {
     try {   
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/bills/payment/create", data: {
+      Response response = await dioInstance.post("/bills/payment/create", data: {
         "customer": customer,
         "amount": amount,
         "type": type,

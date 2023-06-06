@@ -36,7 +36,18 @@ class _DashboardTradesPageState extends State<DashboardTradesPage> {
     );
   }
 
-  _filterTrades(Map selectors) {}
+  _filterTrades(Map selectors) {
+    setState(() {
+      isLoading = true;
+      tradeData = {};
+    });
+    BlocProvider.of<ProfileCubit>(context).trades(
+      page: tradeSelector['page'],
+      dateFrom: tradeSelector['dateFrom'],
+      dateTo: tradeSelector['dateTo'],
+      type: tradeSelector['type'],
+    );
+  }
 
 
   _loadMoreTrades() {
@@ -101,6 +112,7 @@ class _DashboardTradesPageState extends State<DashboardTradesPage> {
                     onTap: () {
                       openBottomSheet(
                         context: context,
+                        height: 520,
                         child: FilterWidget(
                           onChange: (selector) => _filterTrades(selector),
                         ),

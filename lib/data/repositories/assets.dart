@@ -4,8 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AssetRepository {
 
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl';
   final Dio dioInstance;
 
   AssetRepository({ required this.dioInstance});
@@ -13,7 +11,7 @@ class AssetRepository {
   Future getCryptoAssets(String? id) async {
     try {
       Response response =
-          await dioInstance.get("$endpoint/crypto/assets", queryParameters: {
+          await dioInstance.get("/crypto/assets", queryParameters: {
         "id": id,
       });
       return response;
@@ -29,7 +27,7 @@ class AssetRepository {
   Future getTradableFunds(String? id) async {
     try {
       String aId = id ?? '';
-      Response response = await dioInstance.get("$endpoint/funds/$aId");
+      Response response = await dioInstance.get("/funds/$aId");
       return response;
     } catch (error, stacktrace) {
       if (kDebugMode) {
@@ -41,7 +39,7 @@ class AssetRepository {
 
   Future getGiftcards({int page = 1, required String query}) async {
     try {
-      Response response = await dioInstance.get("$endpoint/giftcards",
+      Response response = await dioInstance.get("/giftcards",
           queryParameters: {"page": page, "query": query});
       return response;
     } catch (error, stacktrace) {
@@ -54,7 +52,7 @@ class AssetRepository {
 
   Future getSpendingCards({int page = 0, String query = ''}) async {
     try {
-      Response response = await dioInstance.get("$endpoint/giftcards/spending",
+      Response response = await dioInstance.get("/giftcards/spending",
           queryParameters: {"page": page, "query": query});
 
       return response;
@@ -69,7 +67,7 @@ class AssetRepository {
   Future getCardData({required String id, String? type}) async {
     try {
       Response response = await dioInstance.get(
-        "$endpoint/giftcards/data/$id",
+        "/giftcards/data/$id",
         queryParameters: {"type": type},
       );
       return response;

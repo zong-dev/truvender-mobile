@@ -38,13 +38,18 @@ class AppRouter {
         return '/splash';
       } else if (blocstate is Loading) {
         return '/loading';
-      } else if (blocstate is AccountVerification && location != '/verification') {
+      } else if (blocstate is AccountVerification &&
+          location != '/verification') {
         return '/verification';
       } else if (blocstate is OtpChallenge && location != '/otp-challenge') {
         return '/otp-challenge';
-      } else if (blocstate is KycVerification && location != blocstate.path) {
-          return blocstate.path;
-      } else {}
+      } 
+      // else if (blocstate is KycVerification && location != blocstate.path) {
+      //   return blocstate.path;
+      // } 
+      // else if (blocstate is AccountValidation) {
+      //   return '/validation';
+      // }
     },
     routes: <GoRoute>[
       GoRoute(
@@ -53,6 +58,17 @@ class AppRouter {
           return const SplashScreen();
         },
       ),
+      // GoRoute(
+      //   path: '/validation',
+      //   builder: (BuildContext context, GoRouterState state) {
+      //     var type = context.read<AppBloc>().validationType;
+      //     var onVerified = context.read<AppBloc>().onValidated;
+      //     return BlocProvider(
+      //         create: (context) =>
+      //             ProfileCubit(appBloc: BlocProvider.of<AppBloc>(context)),
+      //         child: ValidationScreen(type: type, onSuccess: onVerified));
+      //   },
+      // ),
       GoRoute(
         path: '/',
         name: 'dashboard',
@@ -252,7 +268,6 @@ class AppRouter {
               return const FundsPage();
             }
           }
-
           return BlocProvider<AssetCubit>(
             create: (context) => AssetCubit(appBloc: appBloc),
             child: chooseView(),

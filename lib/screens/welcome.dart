@@ -44,7 +44,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       withText: true,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.86,
+                      height: MediaQuery.of(context).size.height / 1.84,
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: Stack(
@@ -54,7 +54,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               child: Image.asset(
                                 'assets/images/girl.png',
                                 color: Colors.black,
-                                height: 380.0,
+                                // height: 200.0,
                               ),
                             ),
                             ClipRect(

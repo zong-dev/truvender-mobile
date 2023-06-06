@@ -1,11 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TradeRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl';
   final Dio dioInstance;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -24,7 +21,7 @@ class TradeRepository {
   }) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/trades/create/giftcard", data: {
+      Response response = await dioInstance.post("/trades/create/giftcard", data: {
             "asset" : asset, "amount": amount, "type": type, "rate": rate,
             "denomination": denomination,  "price": price, "isDefault": isDefault,
             "images": images,
@@ -46,7 +43,7 @@ class TradeRepository {
   }) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/trades/create/crypto",
+      Response response = await dioInstance.post("/trades/create/crypto",
           data: {
             "asset" : asset, "amount": amount, "type": type, "value": value
           }, options: options);
@@ -63,7 +60,7 @@ class TradeRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance
-          .get("$endpoint/wallet/all/?type=${id != null ? '' : 'local'}&asset=${id??''}", options: options);
+          .get("/wallet/all/?type=${id != null ? '' : 'local'}&asset=${id??''}", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -82,7 +79,7 @@ class TradeRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance
-          .post("$endpoint/tradescreate/spending-cards", data: {
+          .post("/tradescreate/spending-cards", data: {
              "asset" : asset, "amount": amount, "type": type, "images": images
           }, options: options);
       return response;
@@ -105,7 +102,7 @@ class TradeRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-          "$endpoint/tradescreate/funds",
+          "/tradescreate/funds",
           data: {
              "asset" : asset, "amount": amount, "type": type,
              "country": country, "payableAccount": payableAccount, "image": image

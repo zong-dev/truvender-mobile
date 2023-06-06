@@ -45,7 +45,7 @@ class _BvnKycPageState extends State<BvnKycPage> {
           setState(() => processing = true);
         } else if (state is RequestFailed) {
           setState(() => processing = false);
-          notify(context, "Failed to verify document", "error");
+          notify(context, "Could not Verify Document", "error");
         }
       },
       child: KycWrapper(
@@ -88,7 +88,7 @@ class _BvnKycPageState extends State<BvnKycPage> {
                 background: processing
                     ? Theme.of(context).colorScheme.primary.withOpacity(.6)
                     : AppColors.primary,
-                title: !processing ? 'Submit' : "Verifying...",
+                title: !processing ? 'Verify Now' : "Verifying...",
                 foreground: Colors.white,
                 onPressed: () => {
                   if (_kycForm.currentState!.validate()) {_submitVerification()}

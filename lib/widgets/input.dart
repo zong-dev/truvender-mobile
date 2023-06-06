@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pinput/pinput.dart';
 import 'package:truvender/theme.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -192,6 +195,85 @@ class InputLabel extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontSize: fontSize,
             ),
+      ),
+    );
+  }
+}
+
+
+
+class PinInput extends StatefulWidget {
+  final int length;
+  final TextEditingController controller;
+  final bool showError;
+
+  const PinInput({ Key? key, this.length = 5,  required this.controller, this.showError = false }) : super(key: key);
+
+  @override
+  State<PinInput> createState() => _PinInputState();
+}
+
+class _PinInputState extends State<PinInput> {
+  final focusNode = FocusNode();
+
+  
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    var brightness = SchedulerBinding.instance.window.platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
+    const borderColor = AppColors.accent;
+    const errorColor = Color.fromRGBO(255, 234, 238, 1);
+    var fillColor = isDarkMode ? Theme.of(context).cardColor : AppColors.secoundaryLight;
+    final defaultPinTheme = PinTheme(
+      // width: 56,
+      width: (MediaQuery.of(context).size.width - 100) / widget.length,
+      height: 60,
+      textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+        fontSize: 22,
+        color: Theme.of(context).accentColor,
+        fontWeight: FontWeight.bold
+      ),
+      decoration: BoxDecoration(
+        color: fillColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.transparent),
+      ),
+    );
+  
+    return SizedBox(
+      height: 68,
+      child: Pinput(
+        length: widget.length,
+        controller: widget.controller,
+        focusNode: focusNode,
+        defaultPinTheme: defaultPinTheme,
+        onCompleted: (pin) {
+          // setState(() => widget.showError = pin != '5555');
+        },
+        focusedPinTheme: defaultPinTheme.copyWith(
+          height: 68,
+          // width: 64,
+          width: (MediaQuery.of(context).size.width - 60) / widget.length,
+          decoration: defaultPinTheme.decoration!.copyWith(
+            border: Border.all(color: borderColor),
+          ),
+        ),
+        errorPinTheme: defaultPinTheme.copyWith(
+          decoration: BoxDecoration(
+            color: errorColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }

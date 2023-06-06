@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';

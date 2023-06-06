@@ -1,11 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WalletRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl/wallet';
   final Dio dioInstance;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -15,7 +12,7 @@ class WalletRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.get("$endpoint/all/$id", options: options);
+          await dioInstance.get("/all/$id", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -28,7 +25,7 @@ class WalletRepository {
   Future initiateLocalFund(double amount) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/fund/initiate/",
+      Response response = await dioInstance.post("/fund/initiate/",
           data: {"amount": amount}, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -42,7 +39,7 @@ class WalletRepository {
   Future completeLocalFund(String ref) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/funding/complete",
+      Response response = await dioInstance.post("/funding/complete",
           data: {"ref": ref}, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -56,7 +53,7 @@ class WalletRepository {
   Future transfer({required String email, required double amount}) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/transfer",
+      Response response = await dioInstance.post("/transfer",
           data: {"amount": amount, "email": email}, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -70,7 +67,7 @@ class WalletRepository {
   Future withdraw({required double amount}) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/withdraw",
+      Response response = await dioInstance.post("/withdraw",
           data: {"amount": amount}, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -88,7 +85,7 @@ class WalletRepository {
       required String address}) async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.post("$endpoint/crypto/transfer",
+      Response response = await dioInstance.post("/crypto/transfer",
           data: {
             "amount": amount,
             "value": value,

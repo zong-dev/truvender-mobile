@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/cubits/wallet/wallet_cubit.dart';
 import 'package:truvender/data/models/models.dart';
+import 'package:truvender/services/local_auth.dart';
+import 'package:truvender/services/storage.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
@@ -21,6 +23,7 @@ class _TransferPageState extends State<TransferPage> {
   bool processing = false;
   late User user;
   late AppBloc appBloc;
+  StorageUtil localStore = StorageUtil();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _accountController = TextEditingController();
 
@@ -33,9 +36,32 @@ class _TransferPageState extends State<TransferPage> {
   }
 
   _handleTransfer() async {
-    if(widget.wallet.balance > double.parse(_amountController.text) && !processing){
-      BlocProvider.of<WalletCubit>(context).transfer(email: _accountController.text, amount: double.parse(_amountController.text));
-    }else {
+    var biometricsIsEnabled = await localStore.getBoolVal('biometricsEnabled');
+    if (widget.wallet.balance > double.parse(_amountController.text) &&
+        !processing) {
+      bool authenticate = true;
+      if (biometricsIsEnabled) {
+        authenticate = await LocalAuth.authenticate();
+        if (authenticate) {
+          BlocProvider.of<WalletCubit>(context).transfer(
+              email: _accountController.text,
+              amount: double.parse(_amountController.text));
+        }
+      } else {
+        // ignore: use_build_context_synchronously
+        openModal(
+          context: context,
+          child: VerificationDialog(
+            type: "pin",
+            onSuccess: () {
+              BlocProvider.of<WalletCubit>(context).transfer(
+                  email: _accountController.text,
+                  amount: double.parse(_amountController.text));
+            },
+          ),
+        );
+      }
+    } else {
       notify(context, "Insufficient wallet balance", "error");
     }
   }
@@ -46,17 +72,18 @@ class _TransferPageState extends State<TransferPage> {
       listener: (context, state) {
         if (state is TransactionFailed) {
           setState(() => processing = false);
-          notify(context, "Opps! Something went wrong try again later", "error");
+          notify(
+              context, "Opps! Something went wrong try again later", "error");
           context.pop();
         } else if (state is ProcessingTransaction) {
           setState(() => processing = true);
         } else if (state is TransactionCompleted) {
-         appBloc.localNotificationService.showNotification(
+          appBloc.localNotificationService.showNotification(
               id: 1,
               title: "Transaction Successful!",
-              body: "Transfered  ${user.currency}${moneyFormat(state.transaction.amount)} to ${_accountController.text} successfully");
-          context.pushNamed('transaction',
-              extra: state.transaction );
+              body:
+                  "Transfered  ${user.currency}${moneyFormat(state.transaction.amount)} to ${_accountController.text} successfully");
+          context.pushNamed('transaction', extra: state.transaction);
         }
       },
       child: Wrapper(
@@ -157,7 +184,12 @@ class _TransferPageState extends State<TransferPage> {
                     Button.primary(
                       onPressed: () => !processing ? _handleTransfer() : () {},
                       title: processing ? "Processing..." : "Continue",
-                      background: processing ? Theme.of(context).colorScheme.primary.withOpacity(.6) : AppColors.primary,
+                      background: processing
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(.6)
+                          : AppColors.primary,
                       foreground: AppColors.secoundaryLight,
                     )
                   ],

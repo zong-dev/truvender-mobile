@@ -88,7 +88,7 @@ class _ProfileSettingPageState extends State<ProfileSettingPage>
                 ),
                 SingleChildScrollView(
                   child: SizedBox(
-                    height: (MediaQuery.of(context).size.height / 2) - 100,
+                    height: (MediaQuery.of(context).size.height / 1.2) - 100,
                     width: double.maxFinite,
                     child: TabBarView(
                       controller: _tabController,

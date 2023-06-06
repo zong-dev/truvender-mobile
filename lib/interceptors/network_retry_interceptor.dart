@@ -7,7 +7,7 @@ class RetryOnConnectionChangeIterceptor extends Interceptor {
 
   RetryOnConnectionChangeIterceptor({required this.requestRetrier});
 
-  @override
+  // @override
   Future onError(DioError err, ErrorInterceptorHandler handler) async {
     if (_shouldRetry(err)) {
       try {
@@ -16,15 +16,14 @@ class RetryOnConnectionChangeIterceptor extends Interceptor {
         return e;
       }
     }
-    return err;
+    super.onError(err, handler);
   }
 
-  // @override
-  // void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-  //   print(options.method);
-  //   print(options.path);
-  //   handler.next(options);
-  // }
+  
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    handler.next(options);
+  }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {

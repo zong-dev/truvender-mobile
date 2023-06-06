@@ -21,7 +21,7 @@ class KycWrapper extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 26),
+            padding: const EdgeInsets.symmetric(vertical: 38, horizontal: 26),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

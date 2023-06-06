@@ -8,7 +8,7 @@ class User extends Equatable {
   String? username;
   String? phone;
   String? avatar;
-  List<dynamic>? role;
+  String role;
   String? email_verified_at;
   String? phone_verified_at;
   bool? has_verify_otp;
@@ -34,7 +34,7 @@ class User extends Equatable {
     this.phone,
     this.avatar,
     this.country = 'NG',
-    this.role,
+    this.role = 'user',
     this.notifyType = 2,
     this.email_verified_at,
     this.phone_verified_at,
@@ -133,7 +133,7 @@ class User extends Equatable {
     String? username,
     String? phone,
     String? avatar,
-    List<String>? role,
+    String role = 'user',
     String? email_verified_at,
     String? phone_verified_at,
     bool? has_verify_otp,
@@ -152,7 +152,7 @@ class User extends Equatable {
       username: username ?? this.username,
       phone: phone ?? this.phone,
       avatar: avatar ?? this.avatar,
-      role: role ?? this.role,
+      role: role,
       email_verified_at: email_verified_at ?? this.email_verified_at,
       phone_verified_at: phone_verified_at ?? this.phone_verified_at,
       has_verify_otp: has_verify_otp ?? this.has_verify_otp,

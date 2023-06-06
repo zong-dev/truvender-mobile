@@ -6,11 +6,11 @@ import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/cubits/profile/profile_cubit.dart';
 import 'package:truvender/services/services.dart';
 import 'package:truvender/theme.dart';
+import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
 class DashboardAccountPage extends StatefulWidget {
-  const DashboardAccountPage({Key? key})
-      : super(key: key);
+  const DashboardAccountPage({Key? key}) : super(key: key);
 
   @override
   _DashboardAccountPageState createState() => _DashboardAccountPageState();
@@ -29,21 +29,33 @@ class _DashboardAccountPageState extends State<DashboardAccountPage> {
   };
 
   changeOtp(value) async {
+     var bioEnabled = await localStore.getBoolVal("biometricsEnabled");
+    if (!updating) {
     setState(() {
       enabled = value;
       updating = true;
     });
-    if (!updating) {
+    if(bioEnabled && bioEnabled != null){
       bool authenticate = true;
-      if (deviceConfig['biometricsEnabled'] == true) {
-        authenticate = await LocalAuth.authenticate();
-      }
+      authenticate = await LocalAuth.authenticate();
       if (authenticate) {
         // ignore: use_build_context_synchronously
         BlocProvider.of<ProfileCubit>(context).updateSetting(
             notifyType: appBloc.authenticatedUser.notifyType,
             requireOtp: enabled);
-      }
+      } 
+    }else{
+      // ignore: use_build_context_synchronously
+      openModal(
+            context: context,
+            child: VerificationDialog(
+                type: "password",
+                onSuccess: () {
+                  BlocProvider.of<ProfileCubit>(context).updateSetting(
+                      notifyType: appBloc.authenticatedUser.notifyType,
+                      requireOtp: enabled);
+                }));
+    }
     }
   }
 
@@ -61,14 +73,15 @@ class _DashboardAccountPageState extends State<DashboardAccountPage> {
       };
       appBloc = BlocProvider.of<ProfileCubit>(context).appBloc;
       enabled = appBloc.authenticatedUser.requireOtp;
-      
-      hasSetWithdrawAccount = appBloc.authenticatedUser.withdrawAccount != null &&appBloc.authenticatedUser.withdrawAccount['name'] != null;
+
+      hasSetWithdrawAccount =
+          appBloc.authenticatedUser.withdrawAccount != null &&
+              appBloc.authenticatedUser.withdrawAccount['name'] != null;
     });
   }
 
   updateDeviceConfig(String config, value) async {
     if (config == "biometricsEnabled") {
-      await localStore.getBoolVal("biometricsEnabled");
       final authenticate = await LocalAuth.authenticate();
       if (authenticate) {
         await localStore.setBoolVal("biometricsEnabled", value);
@@ -123,19 +136,22 @@ class _DashboardAccountPageState extends State<DashboardAccountPage> {
                         paneHeight: MediaQuery.of(context).size.height - 200);
                   },
                 ),
-                !hasSetWithdrawAccount ? SettingTile(
-                  label: "Account Withdrawal",
-                  iconLeft: Icons.account_balance_outlined,
-                  iconRight: const Padding(
-                    padding: EdgeInsets.only(right: 10.0),
-                    child: TileButton(),
-                  ),
-                  onTap: () {
-                    openSetting(
-                        pane: "banking",
-                        paneHeight: MediaQuery.of(context).size.height - 200);
-                  },
-                ): const SizedBox(),
+                !hasSetWithdrawAccount
+                    ? SettingTile(
+                        label: "Account Withdrawal",
+                        iconLeft: Icons.account_balance_outlined,
+                        iconRight: const Padding(
+                          padding: EdgeInsets.only(right: 10.0),
+                          child: TileButton(),
+                        ),
+                        onTap: () {
+                          openSetting(
+                              pane: "banking",
+                              paneHeight:
+                                  MediaQuery.of(context).size.height - 200);
+                        },
+                      )
+                    : const SizedBox(),
                 SettingTile(
                   label: "Notification",
                   iconLeft: CupertinoIcons.bell,

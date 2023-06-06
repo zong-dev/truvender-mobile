@@ -28,3 +28,14 @@ class UserChanged extends AppEvent {}
 
 
 class SignOut extends AppEvent {}
+
+class VerifyAccountOwner extends AppEvent {
+  final String type;
+  final String value;
+  const VerifyAccountOwner({ required this.type, required this.value });
+  @override
+  List<Object> get props => [
+    type, value
+  ];
+}
+

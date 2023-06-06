@@ -241,6 +241,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+
   Future<void> validateAccount({
     required String account,
     required String bank,

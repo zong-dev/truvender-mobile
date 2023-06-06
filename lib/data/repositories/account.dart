@@ -4,8 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccountRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl';
   static String flwSecret = dotenv.get("FLW_SECRET_KEY");
   final Dio dioInstance;
 
@@ -16,7 +14,7 @@ class AccountRepository {
   Future getProfile() async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.get("$endpoint/profile", options: options);
+      Response response = await dioInstance.get("/profile", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -30,7 +28,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.get("$endpoint/transactions/banks", options: options);
+          await dioInstance.get("/transactions/banks", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -43,7 +41,7 @@ class AccountRepository {
   Future getWallets() async {
     try {
       var options = await _getRequestOptions();
-      Response response = await dioInstance.get("$endpoint/wallet/all", options: options);
+      Response response = await dioInstance.get("/wallet/all", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -57,7 +55,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.get("$endpoint/transactions/by-wallet/$walletId", queryParameters: selector, options: options);
+          await dioInstance.get("/transactions/by-wallet/$walletId", queryParameters: selector, options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -71,7 +69,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.get(
-          "$endpoint/trades",
+          "/trades",
           queryParameters: selector,
           options: options
       );
@@ -87,7 +85,7 @@ class AccountRepository {
   Future accountData() async {
     try {
     var options = await _getRequestOptions();
-    Response response = await dioInstance.get("$endpoint/account/dashboard", options: options);
+    Response response = await dioInstance.get("/account/dashboard", options: options);
     return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -109,7 +107,7 @@ class AccountRepository {
         "account_bank": accountBank
       };
       Response response = await dioInstance
-          .post("$endpoint/profile/withdraw-account/add", data: requestData, options: options);
+          .post("/profile/withdraw-account/add", data: requestData, options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -122,7 +120,8 @@ class AccountRepository {
   Future resolveAccount({ required String account, required String bank}) async {
     try {
       Map requestData = { "account_bank": bank, "account_number": account };
-      Response response = await dioInstance.post("https://api.flutterwave.com/v3/accounts/resolve", data: requestData, options: Options(headers: {
+      Dio newDio = Dio();
+      Response response = await newDio.post("https://api.flutterwave.com/v3/accounts/resolve", data: requestData, options: Options(headers: {
         "Authorization": flwSecret,
       }));
       return response;
@@ -135,6 +134,7 @@ class AccountRepository {
     }
   }
 
+
   Future updateSetting({
     required bool requireOtp,
     required int notifyType,
@@ -142,7 +142,7 @@ class AccountRepository {
     try {
        var options = await _getRequestOptions();
       Response response =
-          await dioInstance.post("$endpoint/profile/settings/update", data: {
+          await dioInstance.post("/profile/settings/update", data: {
         "notifyType": notifyType,
         "requireOtp": requireOtp,
       }, options: options);
@@ -161,7 +161,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.post("$endpoint/profile/update-avatar", data: {
+          await dioInstance.post("/profile/update-avatar", data: {
           "imgUrl": imgUrl,
         }, options: options
       );
@@ -181,7 +181,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-          "$endpoint/profile/security/update-pin",
+          "/profile/security/update-pin",
           data: {"currentPin": currentPin ?? '', "newPin": newPin}, options: options);
       return response;
     } catch (err, stacktrace) {
@@ -199,7 +199,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance
-          .post("$endpoint/profile/security/password", data: {
+          .post("/profile/security/password", data: {
         "currentPassword": currentPassword,
         "newPassword": newPassword
       }, options: options);
@@ -222,7 +222,7 @@ class AccountRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.post("$endpoint/profile/security/password", data: {
+          await dioInstance.post("/profile/security/password", data: {
         "state": state,
         "country": country,
         "currency": currency,

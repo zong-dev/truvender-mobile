@@ -23,17 +23,6 @@ class Authenticated extends AppState {
 
 class Unauthenticated extends AppState {}
 
-
-class TransactionInitiated extends AppState {
-  final Function onVerified;
-
-  const TransactionInitiated({ required this.onVerified});
-
-  @override
-  List<Object> get props => [ onVerified ];
-
-}
-
 class Loading extends AppState {}
 
 class OtpChallenge extends AppState {}
@@ -50,3 +39,10 @@ class KycVerification extends AppState {
   final String path;
   const KycVerification({ required this.user, required this.path});
 }
+
+
+class Authenticating extends AppState {}
+
+class AccountVerified extends AppState {}
+
+class ValidationFailed extends AppState {}

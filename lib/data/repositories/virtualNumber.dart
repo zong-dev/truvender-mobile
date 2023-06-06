@@ -4,9 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class VirtualNumberRepository {
-  static String? baseUrl = dotenv.get('BASE_URL');
-  static String endpoint = '$baseUrl/virtual-number';
-
   final Dio dioInstance;
 
   final FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -17,7 +14,7 @@ class VirtualNumberRepository {
     try {
       var options = await _getRequestOptions();
       Response response =
-          await dioInstance.get("$endpoint/targets", options: options);
+          await dioInstance.get("/targets", options: options);
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {
@@ -33,7 +30,7 @@ class VirtualNumberRepository {
     try {
       var options = await _getRequestOptions();
       Response response = await dioInstance.post(
-          "$endpoint/buy-target",
+          "/buy-target",
           data: {"targetId": targetId},
           options: options);
       return response;
@@ -47,9 +44,10 @@ class VirtualNumberRepository {
 
   Future getVerificationDetails({ required String id}) async {
     try {
+      Dio newDio = Dio();
       const String endPoint = "https://www.textverified.com/api";
       String? tvToken = dotenv.get('TEXTV_TOKEN');
-      Response response = await dioInstance.get("$endPoint/api/Verifications/$id", options: Options(headers: {"authorization": "Bearer $tvToken"}));
+      Response response = await newDio.get("$endPoint/api/Verifications/$id", options: Options(headers: {"authorization": "Bearer $tvToken"}));
       return response;
     } catch (err, stacktrace) {
       if (kDebugMode) {

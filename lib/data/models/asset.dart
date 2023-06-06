@@ -9,6 +9,7 @@ class Giftcard extends Equatable {
   List? defaultRates;
   String? acceptedCode;
   List? tradeLimits;
+  String? productId;
 
   Giftcard({
     required this.id,
@@ -19,6 +20,7 @@ class Giftcard extends Equatable {
     required this.defaultRates,
     required this.tradeLimits,
     required this.acceptedCode,
+    this.productId,
   });
 
   @override
@@ -36,6 +38,7 @@ class Giftcard extends Equatable {
     return Giftcard(
       id: json['_id'],
       name: json['name'],
+      productId: json['productId'],
       tradeLimits: json['tradeLimits'] ?? [],
       image: json['image'],
       isAvailable: json['isAvailable'],
@@ -50,6 +53,7 @@ class Giftcard extends Equatable {
     data['_id'] = id;
     data['name'] = name;
     data['image'] = image;
+    data['productId'] = productId;
     data['isAvailable'] = isAvailable;
     data['types'] = types;
     data['defaultRates'] = defaultRates;

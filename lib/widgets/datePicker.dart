@@ -14,8 +14,8 @@ class DatePicker extends StatefulWidget {
 
   final String label;
   final String type;
+  final Function? onChange;
   final TextEditingController controller;
-  final VoidCallbackAction? onChange;
 
   @override
   _DatePickerState createState() => _DatePickerState();
@@ -190,13 +190,23 @@ class _DatePickerState extends State<DatePicker> {
               dialogBackgroundColor: Colors.white,
             );
             if (values != null) {
-              // ignore: avoid_print
-              print(_getValueText(
-                config.calendarType,
-                values,
-              ));
               if (widget.type == 'single') {
                 widget.controller.text = DateFormat.yMd().format(values[0]!);
+              }else{
+                if(values.length > 1){
+                  widget.controller.text = "${DateFormat.yMd().format(values[0]!)} - ${DateFormat.yMd().format(values[1]!)}";
+                  widget.onChange!([
+                    DateFormat.yMd().format(values[0]!),
+                    DateFormat.yMd().format(values[1]!)
+                  ]);
+                }else if(values.length == 1){
+                   widget.controller.text =
+                      "${DateFormat.yMd().format(values[0]!)} - ${DateFormat.yMd().format(DateTime.now())}";
+                  widget.onChange!([
+                    DateFormat.yMd().format(values[0]!),
+                    DateFormat.yMd().format(DateTime.now())
+                  ]);
+                }
               }
               setState(() {
                 _singleDatePickerValueWithDefaultValue = values;

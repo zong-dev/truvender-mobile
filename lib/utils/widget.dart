@@ -4,25 +4,25 @@ import 'package:go_router/go_router.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
 
-
-showStatus({
-  required String type,
-  required String title,
-  String? subTitle,
-  Function? next,
-  required BuildContext context
-}) {
+showStatus(
+    {required String type,
+    required String title,
+    String? subTitle,
+    Function? next,
+    required BuildContext context}) {
   showModalBottomSheet(
-    backgroundColor: Colors.transparent,
-    context: context, builder: (_) {
-      return StatusModal(type: type, title: title, subTitle: subTitle, next: next );
-  });
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (_) {
+        return StatusModal(
+            type: type, title: title, subTitle: subTitle, next: next);
+      });
 }
 
 openBottomSheet(
     {required BuildContext context,
     double height = 420,
-    double radius = 40,
+    double radius = 12,
     String label = '',
     bool enableDrag = false,
     required Widget child}) {
@@ -34,7 +34,7 @@ openBottomSheet(
       return Container(
         height: height,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background.withOpacity(.8),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(radius),
             topRight: Radius.circular(radius),
@@ -157,7 +157,6 @@ Container beforeLoad2() => Container(
       ),
     );
 
-
 SizedBox beforeCardLoad(BuildContext context, double itemDiff) => SizedBox(
       width: (MediaQuery.of(context).size.width / 2) - 40,
       child: Column(
@@ -180,3 +179,17 @@ SizedBox beforeCardLoad(BuildContext context, double itemDiff) => SizedBox(
         ],
       ),
     );
+
+openModal({
+    required BuildContext context,
+    required Widget child,
+    bool barrierDismissible = false
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return child;
+    },
+  );
+}

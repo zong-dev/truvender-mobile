@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 class LogoWidget extends StatelessWidget {
   
   const LogoWidget({Key? key, required this.withText})
-      : size = 48,
+      : size = 58,
         font = 24,
         super(key: key);
 
@@ -29,21 +29,25 @@ class LogoWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              !isDarkMode ? 'assets/images/logo/logo-dark.png' : 'assets/images/logo/logo.png',
-              width: size,
+            SizedBox(
               height: size,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Text(
-                "truvender",
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-                ),
+              width: 300,
+              child: Image.asset(
+                !isDarkMode ? 'assets/images/logo/logo-long-dark.png' : 'assets/images/logo/logo-long.png',
+                width: size,
+                height: size,
               ),
-            )
+            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 20.0),
+            //   child: Text(
+            //     "truvender",
+            //     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 16
+            //     ),
+            //   ),
+            // )
           ],
         );
     } else {
