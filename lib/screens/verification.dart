@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:truvender/blocs/app/app_bloc.dart';
 import 'package:truvender/theme.dart';
 import 'package:truvender/utils/utils.dart';
 import 'package:truvender/widgets/widgets.dart';
@@ -17,11 +18,15 @@ class VerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AuthWrapper(
-      child: VerificationForm(
-        email: email,
-        vType: vType,
-        phone: phone,
+    AppBloc appBloc = BlocProvider.of<AppBloc>(context);
+    return BlocProvider<RegisterBloc>(
+      create: (context) => RegisterBloc(appBloc: appBloc, authRepository: appBloc.authRepository),
+      child: AuthWrapper(
+        child: VerificationForm(
+          email: email,
+          vType: vType,
+          phone: phone,
+        ),
       ),
     );
   }
@@ -67,7 +72,7 @@ class _VerificationFormState extends State<VerificationForm> {
   void _verifyEmailOrPhone() {
     if (_verificationForm.currentState!.validate() && !processing) {
       BlocProvider.of<RegisterBloc>(context).add(
-        AccountVerification(
+        SubmitAccountVerification(
           type: verify,
           token: _tokenController.text,
         ),
@@ -85,19 +90,20 @@ class _VerificationFormState extends State<VerificationForm> {
             processing = false;
             verify = 'phone';
           });
+           notify(context, "Email Verification Successful", 'success');
         } else if (state is RegisterLoading) {
-          setState(() {
-            processing = true;
-          });
+          setState(() => processing = true);
         } else if (state is VerificationFailed) {
           notify(context, "Invalid or expired token!", 'error');
+          setState(() => processing = false);
         } else if (state is PhoneVerified) {
-          setState(() {
-            processing = false;
-          });
+          notify(context, "Phone Verification Successful", 'success');
+          setState(() =>  processing = false);
+          BlocProvider.of<AppBloc>(context).add(UserChanged());
         } else if (state is ResentVerificationCode) {
           notify(context, "A new verification token was sent to your $verify",
               'successfully');
+          setState(()  => processing = false);
         }
       },
       child: BlocBuilder<RegisterBloc, RegisterState>(
@@ -116,6 +122,7 @@ class _VerificationFormState extends State<VerificationForm> {
                   label: '${ucFirst(verify)} Verification Token',
                   obsecureText: false,
                   controller: _tokenController,
+                  type: TextInputType.number,
                   bordered: true,
                   rules: MultiValidator(
                     [

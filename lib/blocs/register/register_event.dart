@@ -52,11 +52,11 @@ class SendVerificationCode extends RegisterEvent {
   }
 }
 
-class AccountVerification extends RegisterEvent {
+class SubmitAccountVerification extends RegisterEvent {
   final String type;
   final String token;
 
-  const AccountVerification(
+  const SubmitAccountVerification(
       {required this.type,
       required this.token});
 
@@ -65,6 +65,6 @@ class AccountVerification extends RegisterEvent {
 
   @override
   String toString() {
-    return 'EmailVerificationFormSubmited { email: $type, token: $token }';
+    return 'SubmitAccountVerification { email: $type, token: $token }';
   }
 }

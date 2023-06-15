@@ -1,12 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:truvender/data/models/models.dart';
 import 'package:truvender/data/repositories/repositories.dart';
 import 'package:truvender/services/services.dart';
 // ignore: library_prefixes
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -15,8 +13,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final AuthRepository authRepository;
   final LocalNotification localNotificationService;
   final StorageUtil storage = StorageUtil();
-  static String? baseUrl = dotenv.get('SOCKET_URL');
-  late IO.Socket socket;
+
   late String validationType;
   late Function onValidated;
 
@@ -56,14 +53,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     await authRepository.persistToken(event.token);
     var userRequest = await authRepository.getUser();
     if (userRequest.statusCode == 200) {
-      //Connecting to socket
-      // socket = IO.io(baseUrl, {
-      //   "auth": {"token": event.token}
-      // });
       User user = User.fromJson(userRequest.data['user']);
-      print("${userRequest.data}");
       authenticatedUser = user;
-      // emit(Authenticated(user: user));
+      emit(Authenticated(user: user));
       _validateUserState(user, emit, false);
     }
   }

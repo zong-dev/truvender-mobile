@@ -27,12 +27,12 @@ class RegistrationFailed extends RegisterState {
 class RegisterLoading extends RegisterState {}
 
 class RegisterSuccess extends RegisterState {
-  final Map<String, String> verifiableRecord;
+  final Map<String, dynamic> data;
 
-  const RegisterSuccess({ required this.verifiableRecord});
+  const RegisterSuccess({ required this.data});
 
   @override
-  List<Object> get props => [ verifiableRecord  ];
+  List<Object> get props => [ data  ];
 }
 
 

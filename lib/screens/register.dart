@@ -84,7 +84,7 @@ class _SignupFormState extends State<SignupForm> {
       username: _usernameController.text,
       email: _emailController.text,
       password: _passwordController.text,
-      phone: _phoneController.text.trim(),
+      phone: "+${countryData['phoneCode']}${_phoneController.text.replaceAll(' ', '')}",
       country: countryData['country'],
       currency: countryData['currency'],
     ));
@@ -93,7 +93,7 @@ class _SignupFormState extends State<SignupForm> {
   _getCountryFromIso(String isoCode){
      Country country = CountryPickerUtils.getCountryByIsoCode(isoCode);
      setState(() {
-       countryData = { "country": country.isoCode, "currency": country.currencyCode };
+       countryData = { "country": country.isoCode, "currency": country.currencyCode, "phoneCode": country.phoneCode };
      });
   }
 
@@ -111,8 +111,7 @@ class _SignupFormState extends State<SignupForm> {
             processing = false;
           });
           notify(context, 'Account creation successful', 'success');
-          // Redirect After Signup
-          BlocProvider.of<AppBloc>(context).add(SignOut());
+          BlocProvider.of<AppBloc>(context).add(SignedIn(token: "${state.data['token']}"));
         } else if (state is RegisterLoading) {
           setState(() {
             processing = true;

@@ -38,7 +38,7 @@ class SimpleBlocObserver extends BlocObserver {
 void main() async {
   Bloc.observer = SimpleBlocObserver();
   await dotenv.load(fileName: ".env");
-  String baseUri = "http://192.168.1.148:6080/v1";
+  String baseUri = "https://api.truvender.com/v1";
   runApp(Truvender(baseUri: baseUri));
 }
 
@@ -114,8 +114,8 @@ class _TruvenderState extends State<Truvender> {
       child: BlocListener<AppBloc, AppState>(
         listener: (context, state) {
           if(state is Authenticated){
-            var socketClient = BlocProvider.of<AppBloc>(context).socket;
-            socketHandler(socketClient, context);
+            // var socketClient = BlocProvider.of<AppBloc>(context).socket;
+            // socketHandler(socketClient, context);
           }
         },
         child: BlocBuilder<AppBloc, AppState>(

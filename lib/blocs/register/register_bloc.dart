@@ -14,10 +14,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   RegisterBloc({required this.authRepository, required this.appBloc})
       : super(RegisterInitial()) {
     on<SignupFormSubmitted>(_onSignupSubmitted);
-    on<AccountVerification>(_onAccountVerification);
+    on<SubmitAccountVerification>(_onAccountVerification);
     on<SendVerificationCode>(_onSendVerificationCode);
   }
-  
+
   _onSendVerificationCode(event, emit) async {
     emit(RegisterLoading());
     try {
@@ -32,10 +32,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   _onAccountVerification(event, emit) async {
     emit(RegisterLoading());
     try {
-      var request = await authRepository.verifyAccount(event.type, event.token);
-      if (request.status == 200 && event.type == 'email') {
+      await authRepository.verifyAccount(event.type, event.token);
+      if ( event.type == 'email') {
         emit(EmailVerified());
-      } else if (request.status == 200 && event.type == 'phone') {
+      } else if (event.type == 'phone') {
         emit(PhoneVerified());
       }
     } catch (e) {
@@ -46,33 +46,37 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   _onSignupSubmitted(event, emit) async {
     emit(RegisterLoading());
     try {
-      bool countryIsSupported = availableIn.contains(event!.country.toString().toUpperCase());
+      bool countryIsSupported =
+          availableIn.contains(event!.country.toString().toUpperCase());
       if (!countryIsSupported) {
-        emit(const RegistrationFailed(message: "Application is not supported in your country"));
+        emit(const RegistrationFailed(
+            message: "Application is not supported in your country"));
       } else {
         var recordValidation = await authRepository.checkDuplicateRecords(
           email: event.email,
           phone: event.phone,
           username: event.username,
         );
-        if (recordValidation.email == false &&
-            recordValidation.phone == true &&
-            recordValidation.username == true) {
-          await authRepository.signUp(
-              email: event.email,
-              phone: event.phone,
-              username: event.username,
-              password: event.password,
-              currency: event.currency,
-              country: event.country,
-              referrer: event.referrer);
-          Map<String, String> toBeVerified = {
-            "email": event.email,
-            "phone": event.phone
-          };
-          emit(RegisterSuccess(verifiableRecord: toBeVerified));
+
+        if (recordValidation.data['email'] == false &&
+            recordValidation.data['phone'] == false &&
+            recordValidation.data['username'] == false) {
+          var response = await authRepository.signUp(
+            email: event.email,
+            phone: event.phone,
+            username: event.username,
+            password: event.password,
+            currency: event.currency,
+            country: event.country,
+            referrer: event.referrer,
+          );
+          // Map<String, String> toBeVerified = {
+          //   "email": event.email,
+          //   "phone": event.phone
+          // };
+          emit(RegisterSuccess(data: response.data));
         } else {
-          Map<String, dynamic> responseObject = recordValidation;
+          var responseObject = recordValidation.data;
           String fieldName = '';
           if (responseObject['email'] == true) {
             fieldName = 'email';
@@ -85,8 +89,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         }
       }
     } catch (e) {
-      // String message = e.toString();
-      emit( const RegistrationFailed(message: "Connection Error"));
+      String message = e.toString();
+      emit(const RegistrationFailed(message: "Connection Error"));
     }
   }
 }

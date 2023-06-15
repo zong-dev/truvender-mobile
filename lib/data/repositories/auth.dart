@@ -43,7 +43,7 @@ class AuthRepository {
       required String username}) async {
     try {
       Response response =
-          await dioInstance.post("/auth/active-record", data: {
+          await dioInstance.post("/auth/active-records", data: {
         'records': {
           'email': email,
           'phone': phone,
@@ -70,7 +70,7 @@ class AuthRepository {
   }) async {
     try {
       Response response =
-          await dioInstance.post("/auth/signin", data: {
+          await dioInstance.post("/auth/signup", data: {
         "username": username,
         "password": password,
         "email": email,

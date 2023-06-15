@@ -43,10 +43,9 @@ class AppRouter {
         return '/verification';
       } else if (blocstate is OtpChallenge && location != '/otp-challenge') {
         return '/otp-challenge';
-      } 
-      // else if (blocstate is KycVerification && location != blocstate.path) {
-      //   return blocstate.path;
-      // } 
+      } else if (blocstate is KycVerification && location != blocstate.path) {
+        return blocstate.path;
+      }
       // else if (blocstate is AccountValidation) {
       //   return '/validation';
       // }
@@ -191,7 +190,7 @@ class AppRouter {
         path: '/virtualNumber',
         name: 'virtualNumber',
         builder: (BuildContext context, GoRouterState state) =>
-            const FundTradePage(),
+            const VirtualNumberPage(),
       ),
 
       /**
@@ -268,6 +267,7 @@ class AppRouter {
               return const FundsPage();
             }
           }
+
           return BlocProvider<AssetCubit>(
             create: (context) => AssetCubit(appBloc: appBloc),
             child: chooseView(),
